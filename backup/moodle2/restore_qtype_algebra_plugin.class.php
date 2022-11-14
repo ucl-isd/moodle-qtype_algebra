@@ -15,16 +15,21 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Restore qtype_algebra
+ *
  * @package    qtype_algebra
  * @copyright  Roger Moore <rwmoore@ualberta.ca>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Restore plugin class that provides the necessary information
+ *
  * needed to restore one algebra qtype plugin
+ *
+ * @package    qtype_algebra
+ * @copyright  Roger Moore <rwmoore@ualberta.ca>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class restore_qtype_algebra_plugin extends restore_qtype_plugin {
 
@@ -51,6 +56,10 @@ class restore_qtype_algebra_plugin extends restore_qtype_plugin {
 
     /**
      * Process the qtype/algebra element
+     *
+     * @param object $data
+     * @return void
+     * @throws dml_exception
      */
     public function process_algebra($data) {
         global $DB;
@@ -76,6 +85,10 @@ class restore_qtype_algebra_plugin extends restore_qtype_plugin {
 
     /**
      * Process the qtype/algebravariable element
+     *
+     * @param stdClass $data
+     * @return void
+     * @throws dml_exception
      */
     public function process_algebravariable($data) {
         global $DB;

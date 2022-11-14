@@ -22,13 +22,16 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace qtype_algebra;
 
 defined('MOODLE_INTERNAL') || die();
+
+use parser_exception;
+use qtype_algebra_parser;
 
 global $CFG;
 require_once($CFG->dirroot . '/question/engine/tests/helpers.php');
 require_once($CFG->dirroot . '/question/type/algebra/tests/helper.php');
-require_once($CFG->dirroot . '/question/type/algebra/parser.php');
 
 
 /**
@@ -37,10 +40,13 @@ require_once($CFG->dirroot . '/question/type/algebra/parser.php');
  * @copyright  2017 Jean-Michel Vedrine
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-class qtype_algebra_parser_test extends advanced_testcase {
+class parser_test extends \advanced_testcase {
     /**
      * Test base elements of the parser
+     *
+     * @covers \qtype_algebra::parser_vars_functions
+     * @return void
+     * @throws parser_exception
      */
     public function test_parser_vars_functions() {
         $p = new qtype_algebra_parser;
@@ -53,6 +59,10 @@ class qtype_algebra_parser_test extends advanced_testcase {
 
     /**
      * Test how various multiplications are displayed using TeX
+     *
+     * @covers \qtype_algebra::parser_multiply_display
+     * @return void
+     * @throws parser_exception
      */
     public function test_parser_multiply_display() {
         $p = new qtype_algebra_parser;

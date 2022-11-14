@@ -22,6 +22,13 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace qtype_algebra;
+
+use coding_exception;
+use moodle_exception;
+use qtype_algebra;
+use qtype_algebra_edit_form;
+use qtype_algebra_test_helper;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -38,12 +45,18 @@ require_once($CFG->dirroot . '/question/type/algebra/edit_algebra_form.php');
  * @copyright  2007 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class qtype_algebra_test extends advanced_testcase {
+class question_type_test extends \advanced_testcase {
+    /**
+     * @var string[]
+     */
     public static $includecoverage = array(
         'question/type/questiontypebase.php',
         'question/type/algebra/questiontype.php',
     );
 
+    /**
+     * @var object qtype_algebra
+     */
     protected $qtype;
 
     protected function setUp(): void {
@@ -54,42 +67,80 @@ class qtype_algebra_test extends advanced_testcase {
         $this->qtype = null;
     }
 
+    /**
+     * Get test question data.
+     *
+     * @return mixed
+     */
     protected function get_test_question_data() {
-        return test_question_maker::get_question_data('algebra', 'simplemath');
+        return \test_question_maker::get_question_data('algebra', 'simplemath');
     }
 
+    /**
+     * Test name
+     *
+     * @covers \qtype_algebra::name
+     * @return void
+     */
     public function test_name() {
         $this->assertEquals($this->qtype->name(), 'algebra');
     }
 
+    /**
+     * Test can analyse responses
+     *
+     * @covers \qtype_algebra::can_analyse_responses
+     * @return void
+     */
     public function test_can_analyse_responses() {
         $this->assertTrue($this->qtype->can_analyse_responses());
     }
 
+    /**
+     * Test random guess score
+     *
+     * @covers \qtype_algebra::get_random_guess_score
+     * @return void
+     */
     public function test_get_random_guess_score() {
-        $q = test_question_maker::get_question_data('algebra');
+        $q = \test_question_maker::get_question_data('algebra');
         $this->assertEquals(0, $this->qtype->get_random_guess_score($q));
     }
 
+    /**
+     * Test possible responses
+     *
+     * @covers \qtype_algebra::get_possible_responses
+     * @return void
+     * @throws coding_exception
+     */
     public function test_get_possible_responses() {
-        $q = test_question_maker::get_question_data('algebra', 'derive');
+        $q = \test_question_maker::get_question_data('algebra', 'derive');
 
         $this->assertEquals(array(
             $q->id => array(
-                13 => new question_possible_response('2*x', 1),
-                14 => new question_possible_response('x', 0.2),
-                null => question_possible_response::no_response(),
-                0 => new question_possible_response(get_string('didnotmatchanyanswer', 'question'), 0),
+                13 => new \question_possible_response('2*x', 1),
+                14 => new \question_possible_response('x', 0.2),
+                null => \question_possible_response::no_response(),
+                0 => new \question_possible_response(get_string('didnotmatchanyanswer', 'question'), 0),
             ),
         ), $this->qtype->get_possible_responses($q));
     }
 
+    /**
+     * Test question saving simplemath
+     *
+     * @covers \qtype_algebra::question_saving_simplemath
+     * @return void
+     * @throws coding_exception
+     * @throws moodle_exception
+     */
     public function test_question_saving_simplemath() {
         $this->resetAfterTest(true);
         $this->setAdminUser();
 
-        $questiondata = test_question_maker::get_question_data('algebra', 'simplemath');
-        $formdata = test_question_maker::get_question_form_data('algebra', 'simplemath');
+        $questiondata = \test_question_maker::get_question_data('algebra', 'simplemath');
+        $formdata = \test_question_maker::get_question_form_data('algebra', 'simplemath');
 
         $generator = $this->getDataGenerator()->get_plugin_generator('core_question');
         $cat = $generator->create_question_category(array());
@@ -130,12 +181,20 @@ class qtype_algebra_test extends advanced_testcase {
         }
     }
 
+    /**
+     * Test question saving trims answers
+     *
+     * @covers \qtype_algebra::question_saving_trims_answers
+     * @return void
+     * @throws coding_exception
+     * @throws moodle_exception
+     */
     public function test_question_saving_trims_answers() {
         $this->resetAfterTest(true);
         $this->setAdminUser();
 
-        $questiondata = test_question_maker::get_question_data('algebra', 'simplemath');
-        $formdata = test_question_maker::get_question_form_data('algebra', 'simplemath');
+        $questiondata = \test_question_maker::get_question_data('algebra', 'simplemath');
+        $formdata = \test_question_maker::get_question_form_data('algebra', 'simplemath');
 
         $generator = $this->getDataGenerator()->get_plugin_generator('core_question');
         $cat = $generator->create_question_category(array());
@@ -158,6 +217,12 @@ class qtype_algebra_test extends advanced_testcase {
         $this->assertEquals('7*x', $firstsavedanswer->answer);
     }
 
+    /**
+     * Test extra question fields.
+     *
+     * @covers \qtype_algebra::extra_question_fields
+     * @return void
+     */
     public function test_extra_question_fields() {
         $extraquestionfields = array('qtype_algebra_options', 'compareby', 'nchecks',
             'tolerance', 'allowedfuncs', 'disallow', 'answerprefix');

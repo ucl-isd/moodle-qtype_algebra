@@ -18,7 +18,7 @@
  * algebra answer question definition class.
  *
  * @package    qtype_algebra
- * @author  Roger Moore <rwmoore@ualberta.ca>
+ * @copyright  Roger Moore <rwmoore@ualberta.ca>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -43,21 +43,41 @@ class qtype_algebra_question extends question_graded_by_strategy
     public $answers = array();
     /** @var array of question_answer. */
     public $variables = array();
+    /** @var string */
     public $compareby;
+    /** @var int */
     public $nchecks;
+    /** @var object */
     public $tolerance;
+    /** @var object */
     public $allowedfuncs;
+    /** @var string */
     public $disallow;
+    /** @var string */
     public $answerprefix;
 
+    /**
+     * Constructor.
+     */
     public function __construct() {
         parent::__construct(new question_first_matching_answer_grading_strategy($this));
     }
 
+    /**
+     * Get expected data.
+     *
+     * @return array
+     */
     public function get_expected_data() {
         return array('answer' => PARAM_RAW_TRIMMED);
     }
 
+    /**
+     * summarise response.
+     *
+     * @param array $response
+     * @return mixed|string|null
+     */
     public function summarise_response(array $response) {
         if (isset($response['answer'])) {
             return $response['answer'];
@@ -66,11 +86,24 @@ class qtype_algebra_question extends question_graded_by_strategy
         }
     }
 
+    /**
+     * Is complete response.
+     *
+     * @param array $response
+     * @return bool
+     */
     public function is_complete_response(array $response) {
         return array_key_exists('answer', $response) &&
                 ($response['answer'] || $response['answer'] === '0');
     }
 
+    /**
+     * Get validation error.
+     *
+     * @param array $response
+     * @return lang_string|string
+     * @throws coding_exception
+     */
     public function get_validation_error(array $response) {
         if ($this->is_gradable_response($response)) {
             return '';
@@ -84,7 +117,7 @@ class qtype_algebra_question extends question_graded_by_strategy
      * This method will check to see if the argument it is given is already a parsed
      * expression and if not will attempt to parse it.
      *
-     * @param $expr expression which will be parsed
+     * @param object $expr expression which will be parsed
      * @return top term of the parse tree or a string if an exception is thrown
      */
     public function parse_expression($expr) {
@@ -123,7 +156,8 @@ class qtype_algebra_question extends question_graded_by_strategy
      * This method will parse the expression and return a TeX string
      * or empty string
      *
-     * @param $expr expression which will be parsed
+     * @param string $text
+     * @param array $vars
      * @return top term of the parse tree or a string if an exception is thrown
      */
     public function formated_expression($text, $vars = null) {
@@ -163,9 +197,16 @@ class qtype_algebra_question extends question_graded_by_strategy
 
     }
 
+    /**
+     * Is the same response.
+     *
+     * @param array $prevresponse
+     * @param array $newresponse
+     * @return bool
+     */
     public function is_same_response(array $prevresponse, array $newresponse) {
         // Check that both states have valid responses.
-        if (!isset($prevresponse['answer']) or !isset($newresponse['answer'])) {
+        if (!isset($prevresponse['answer']) || !isset($newresponse['answer'])) {
             // At last one of the states did not have a response set so return false by default.
             return false;
         }
@@ -188,10 +229,22 @@ class qtype_algebra_question extends question_graded_by_strategy
         }
     }
 
+    /**
+     * Get answers.
+     *
+     * @return array
+     */
     public function get_answers() {
         return $this->answers;
     }
 
+    /**
+     * Compare response with answer.
+     *
+     * @param array $response
+     * @param question_answer $answer
+     * @return bool
+     */
     public function compare_response_with_answer(array $response, question_answer $answer) {
         $expr = $this->parse_expression($response['answer']);
         // Check that there is a response and if not return false. We do this here
@@ -225,7 +278,9 @@ class qtype_algebra_question extends question_graded_by_strategy
      * XML-RPC server which is called with both the asnwer and the response and told to
      * compare the two algebraic expressions.
      *
-     * @return boolean true if the response matches the answer, false otherwise
+     * @param object $response
+     * @param object $answer
+     * @return bool true if the response matches the answer, false otherwise
      */
     public function test_response_by_sage($response, $answer) {
         global $CFG;
@@ -253,7 +308,9 @@ class qtype_algebra_question extends question_graded_by_strategy
      * which it can be checked and then both expressions will be evalutated several times
      * using values randomly chosen to be within the range.
      *
-     * @return boolean true if the response matches the answer, false otherwise
+     * @param object $response
+     * @param object $answer
+     * @return bool true if the response matches the answer, false otherwise
      */
     public function test_response_by_evaluation($response, $answer) {
         // Flag used to denote mismatch in response and answer.
@@ -304,6 +361,8 @@ class qtype_algebra_question extends question_graded_by_strategy
      * check than a simple text compare but will not, neccessarily, catch two equivalent but
      * different algebraic expressions.
      *
+     * @param object $response
+     * @param object $answer
      * @return boolean true if the response matches the answer, false otherwise
      */
     public function test_response_by_equivalence($response, $answer) {
@@ -311,6 +370,17 @@ class qtype_algebra_question extends question_graded_by_strategy
         return $response->equivalent($answer);
     }
 
+    /**
+     * Check file access.
+     *
+     * @param object $qa
+     * @param object $options
+     * @param string $component
+     * @param string $filearea
+     * @param object $args
+     * @param bool $forcedownload
+     * @return bool
+     */
     public function check_file_access($qa, $options, $component, $filearea,
             $args, $forcedownload) {
         if ($component == 'question' && $filearea == 'answerfeedback') {
@@ -330,8 +400,9 @@ class qtype_algebra_question extends question_graded_by_strategy
 }
 
 /**
- * Class to represent an algebra question variable, loaded from the qtype_algebra_variables table
- * in the database.
+ * Class to represent an algebra question variable
+ *
+ * loaded from the qtype_algebra_variables table in the database.
  *
  * @copyright  2009 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -351,10 +422,11 @@ class qtype_algebra_variable {
 
     /**
      * Constructor.
+     *
      * @param int $id the variable.
      * @param string $name the name.
      * @param string $min the minimum value.
-     * @param string $maximum value.
+     * @param string $max value.
      */
     public function __construct($id, $name, $min, $max) {
         $this->id = $id;

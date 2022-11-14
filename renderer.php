@@ -17,13 +17,10 @@
 /**
  * Algebra question renderer class.
  *
- * @package    qtype
- * @subpackage algebra
- * @author  Roger Moore <rwmoore 'at' ualberta.ca>
+ * @package    qtype_algebra
+ * @copyright  Roger Moore <rwmoore 'at' ualberta.ca>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-defined('MOODLE_INTERNAL') || die();
 
 /**
  * Generates the output for algebra questions.
@@ -32,11 +29,19 @@ defined('MOODLE_INTERNAL') || die();
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class qtype_algebra_renderer extends qtype_renderer {
-    public function formulation_and_controls(question_attempt $qa,
-            question_display_options $options) {
-            global $CFG;
+    /**
+     * Formulation and controls.
+     *
+     * @param question_attempt $qa
+     * @param question_display_options $options
+     * @return string
+     * @throws coding_exception
+     * @throws dml_exception
+     */
+    public function formulation_and_controls(question_attempt $qa, question_display_options $options) {
+        global $CFG;
 
-         if (get_config('qtype_algebra', 'formuladisplay') == 'dynamic') {
+        if (get_config('qtype_algebra', 'formuladisplay') == 'dynamic') {
             $this->page->requires->js_call_amd('qtype_algebra/display', 'init');
         }
 
@@ -74,7 +79,7 @@ class qtype_algebra_renderer extends qtype_renderer {
 
         // Create an array of variable names to use when displaying the function entered.
         $vars = array();
-        if ($question and isset($question->variables)) {
+        if ($question && isset($question->variables)) {
             $variables = $question->variables;
             foreach ($question->variables as $var) {
                 $vars[] = $var->name;
@@ -90,7 +95,7 @@ class qtype_algebra_renderer extends qtype_renderer {
 
         $result .= html_writer::start_tag('div', array('class' => 'ablock'));
         $result .= html_writer::start_tag('div', array('class' => 'prompt', 'style' => 'vertical-align: top'));
-        if (isset($question->answerprefix) and !empty($question->answerprefix)) {
+        if (isset($question->answerprefix) && !empty($question->answerprefix)) {
               $opts = new StdClass;
               $opts->para = false;
               $result .= html_writer::tag('div', format_text($question->answerprefix, FORMAT_MOODLE, $opts) . $input,
@@ -154,6 +159,12 @@ class qtype_algebra_renderer extends qtype_renderer {
         return $result;
     }
 
+    /**
+     * Specific feedback.
+     *
+     * @param question_attempt $qa
+     * @return string
+     */
     public function specific_feedback(question_attempt $qa) {
         $question = $qa->get_question();
 
@@ -166,6 +177,13 @@ class qtype_algebra_renderer extends qtype_renderer {
                 $qa, 'question', 'answerfeedback', $answer->id);
     }
 
+    /**
+     * Correct response.
+     *
+     * @param question_attempt $qa
+     * @return string
+     * @throws coding_exception
+     */
     public function correct_response(question_attempt $qa) {
         $question = $qa->get_question();
 

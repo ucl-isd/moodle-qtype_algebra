@@ -15,7 +15,10 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * XMLRPC utils for qtype_algebra.
+ *
  * @package    qtype_algebra
+ * @copyright  Roger Moore <rwmoore@ualberta.ca>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -54,7 +57,20 @@ if (!extension_loaded('xmlrpc')) {
     debugging('The php xml-rpc extension is not loaded, SAGE evaluation will fail.', DEBUG_DEVELOPER);
 }
 
-// Generic function to call an http server with post method.
+/**
+ * Generic function to call an http server with post method.
+ *
+ * @param object $request
+ * @param object $host
+ * @param string $uri
+ * @param int $port
+ * @param bool $debug
+ * @param int $timeout
+ * @param object $user
+ * @param object $pass
+ * @param bool $secure
+ * @return string
+ */
 function xu_query_http_post($request, $host, $uri, $port, $debug,
                             $timeout, $user, $pass, $secure = false) {
     $responsebuf = "";
@@ -108,12 +124,25 @@ function xu_query_http_post($request, $host, $uri, $port, $debug,
     return $responsebuf;
 }
 
+/**
+ * Xu fault code.
+ *
+ * @param object $code
+ * @param string $string
+ * @return array
+ */
 function xu_fault_code($code, $string) {
     return array('faultCode' => $code,
             'faultString' => $string);
 }
 
-
+/**
+ * Find and decode XML.
+ *
+ * @param string $buf
+ * @param bool $debug
+ * @return mixed
+ */
 function find_and_decode_xml($buf, $debug) {
     if (strlen($buf)) {
         $xmlbegin = substr($buf, strpos($buf, "<?xml"));
@@ -130,18 +159,19 @@ function find_and_decode_xml($buf, $debug) {
 
 
 /**
- * @param params   a struct containing 3 or more of these key/val pairs:
- * @param host         remote host (required)
- * @param uri         remote uri     (required)
- * @param port         remote port (required)
- * @param method   name of method to call
- * @param args        arguments to send (parameters to remote xmlrpc server)
- * @param debug     debug level (0 none, 1, some, 2 more)
- * @param timeout     timeout in secs.  (0 = never)
- * @param user         user name for authentication.
- * @param pass         password for authentication
- * @param secure     secure. wether to use fsockopen_ssl. (requires special php build).
- * @param output     array. xml output options. can be null.  details below:
+ * a struct containing 3 or more of these key/val pairs:
+ *
+ * host     remote host (required)
+ * uri      remote uri     (required)
+ * port     remote port (required)
+ * method   name of method to call
+ * args     arguments to send (parameters to remote xmlrpc server)
+ * debug    debug level (0 none, 1, some, 2 more)
+ * timeout  timeout in secs.  (0 = never)
+ * user     user name for authentication.
+ * pass     password for authentication
+ * secure   secure. wether to use fsockopen_ssl. (requires special php build).
+ * output   array. xml output options. can be null.  details below:
  *
  *     output_type: return data as either php native data types or xml
  *                  encoded. ifphp is used, then the other values are ignored. default = xml
@@ -170,6 +200,9 @@ function find_and_decode_xml($buf, $debug) {
  *                   or
  *
  *                   $output_options = array('output_type' => 'php');
+ *
+ * @param object $params
+ * @return mixed
  */
 function xu_rpc_http_concise($params) {
     $host = $uri = $port = $method = $args = $debug = null;
@@ -201,32 +234,56 @@ function xu_rpc_http_concise($params) {
     return $retval;
 }
 
-// Call an xmlrpc method on a remote http server. legacy support.
+/**
+ * Call a xmlrpc method on a remote http server. legacy support.
+ *
+ * @param object $method
+ * @param object $args
+ * @param object $host
+ * @param object $uri
+ * @param object $port
+ * @param bool $debug
+ * @param int $timeout
+ * @param object $user
+ * @param object $pass
+ * @param object $secure
+ * @return mixed
+ */
 function xu_rpc_http($method, $args, $host, $uri="/", $port=80, $debug=false,
                      $timeout=0, $user=false, $pass=false, $secure=false) {
     return xu_rpc_http_concise(
         array(
-            method  => $method,
-            args    => $args,
-            host    => $host,
-            uri     => $uri,
-            port    => $port,
-            debug   => $debug,
-            timeout => $timeout,
-            user    => $user,
-            pass    => $pass,
-            secure  => $secure
+            'method'  => $method,
+            'args'    => $args,
+            'host'    => $host,
+            'uri'     => $uri,
+            'port'    => $port,
+            'debug'   => $debug,
+            'timeout' => $timeout,
+            'user'    => $user,
+            'pass'    => $pass,
+            'secure'  => $secure
         ));
 }
 
 
-
+/**
+ * Xu is fault.
+ *
+ * @param object $arg
+ * @return bool
+ */
 function xu_is_fault($arg) {
     // The xmlrpc extension finally supports this.
     return is_array($arg) ? xmlrpc_is_fault($arg) : false;
 }
 
-// Sets some http headers and prints xml.
+/**
+ * Sets some http headers and prints xml.
+ *
+ * @param string $xml
+ * @return void
+ */
 function xu_server_send_http_response($xml) {
     header("Content-type: text/xml");
     header("Content-length: " . strlen($xml) );

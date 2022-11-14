@@ -15,6 +15,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Settings for qtype_algebra.
+ *
  * @package    qtype_algebra
  * @copyright  Roger Moore <rwmoore@ualberta.ca>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later

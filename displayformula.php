@@ -15,17 +15,16 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Convert into LaTeX code.
+ *
+ * Script which converts the given formula text into LaTeX code and then
+ * displays the appropriate image file. It relies on the LaTeX filter or
+ * the mathJax filter to be present.
+ *
  * @package    qtype_algebra
  * @copyright  Roger Moore <rwmoore@ualberta.ca>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-/**
- * Script which converts the given formula text into LaTeX code and then
- * displays the appropriate image file. It relies on the LaTeX filter or
- * the mathJax filter to be present.
- */
-
 
 require_once('../../../config.php');
 require_once("$CFG->dirroot/question/type/algebra/parser.php");
