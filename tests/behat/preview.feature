@@ -26,7 +26,8 @@ Feature: Preview an Algebra question
 
   @javascript @_switch_window
   Scenario: Preview an Algebra question with correct answer
-    When I click on "Edit" "link" in the "algebra-001" "table_row"
+#    When I click on "Edit" "link" in the "algebra-001" "table_row"
+    When I click on "//div[@class='dropdown']//a[contains(.,'Edit')]" "xpath_element" in the "algebra-001" "table_row"
     Then I should see "Preview"
     When I click on "Preview" "link"
     # And I switch to "questionpreview" window
@@ -44,7 +45,8 @@ Feature: Preview an Algebra question
 
   @javascript @_switch_window
   Scenario: Preview an Algebra question with incorrect answer
-    When I click on "Edit" "link" in the "algebra-001" "table_row"
+#    When I click on "Edit" "link" in the "algebra-001" "table_row"
+    When I click on "//div[@class='dropdown']//a[contains(.,'Edit')]" "xpath_element" in the "algebra-001" "table_row"
     Then I should see "Preview"
     When I click on "Preview" "link"
     # And I switch to "questionpreview" window
