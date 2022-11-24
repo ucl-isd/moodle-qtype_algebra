@@ -50,6 +50,7 @@ Feature: Test editing an Algebra question
     When I click on "Edit" "link" in the "Edited algebra-001 name" "table_row"
     Then I should see "Preview"
     When I click on "Preview" "link"
+    And I switch to "questionpreview" window
     Then I should see "P(x) = 3x and Q(x) = 4x. Calculate (P + Q)(x)"
     # Set behaviour options
     And I set the following fields to these values:

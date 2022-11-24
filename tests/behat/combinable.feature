@@ -65,7 +65,7 @@ Feature: Test algebra questions in combined question
     When I click on "Edit" "link" in the "Combined 001" "table_row"
     Then I should see "Preview"
     When I click on "Preview" "link"
-    # And I switch to "questionpreview" window
+    And I switch to "questionpreview" window
 
     # Set display and behaviour options
     And I set the following fields to these values:

@@ -25,7 +25,7 @@ Feature: Test exporting Algebra questions
 
   Scenario: Export an Algebra question
     When I navigate to "Question bank" in current page administration
-    And I select "Export" from the "jump" singleselect
+    And I click on "Export" "link"
     And I set the field "id_format_xml" to "1"
     And I press "Export questions to file"
     Then following "click here" should download between "1100" and "1300" bytes
