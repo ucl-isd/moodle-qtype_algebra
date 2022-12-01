@@ -159,7 +159,7 @@ class question_type_test extends \advanced_testcase {
         $actualquestiondata = end($actualquestionsdata);
 
         foreach ($questiondata as $property => $value) {
-            if (!in_array($property, array('id', 'version', 'timemodified', 'timecreated', 'options'))) {
+            if (!in_array($property, array('id', 'idnumber', 'version', 'timemodified', 'timecreated', 'options'))) {
                 $this->assertObjectHasAttribute($property, $actualquestiondata);
             }
         }
