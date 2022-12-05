@@ -26,10 +26,8 @@ Feature: Test editing an Algebra question
 
   @javascript @_switch_window
   Scenario: Edit an Algebra question
-#    When I click on "Edit" "link" in the "algebra-001 for editing" "table_row"
     When I click on "//div[@class='dropdown']//a[contains(.,'Edit')]" "xpath_element" in the "algebra-001 for editing" "table_row"
     Then I should see "Edit question"
-#    When I click on "Edit question" "link"
     When I click on "//a[@role='menuitem']//span[contains(.,'Edit question')]" "xpath_element"
     And I set the following fields to these values:
       | Question name | |
@@ -39,10 +37,8 @@ Feature: Test editing an Algebra question
       | Question name | Edited algebra-001 name |
     And I press "id_submitbutton"
     Then I should see "Edited algebra-001 name"
-#    When I click on "Edit" "link" in the "Edited algebra-001 name" "table_row"
     When I click on "//div[@class='dropdown']//a[contains(.,'Edit')]" "xpath_element" in the "Edited algebra-001 name" "table_row"
     Then I should see "Edit question"
-#    When I click on "Edit question" "link"
     When I click on "//a[@role='menuitem']//span[contains(.,'Edit question')]" "xpath_element"
     And I press "id_addanswers"
     And I set the following fields to these values:
@@ -51,7 +47,6 @@ Feature: Test editing an Algebra question
       | id_feedback_1        | 3x + 4x gives 7x not 6x.   |
     And I press "id_submitbutton"
     Then I should see "Edited algebra-001 name"
-#    When I click on "Edit" "link" in the "Edited algebra-001 name" "table_row"
     When I click on "//div[@class='dropdown']//a[contains(.,'Edit')]" "xpath_element" in the "Edited algebra-001 name" "table_row"
     Then I should see "Preview"
     When I click on "Preview" "link"

@@ -62,11 +62,9 @@ Feature: Test algebra questions in combined question
     Then I should see "Combined 001"
 
     # Preview it.
-#    When I click on "Edit" "link" in the "Combined 001" "table_row"
     When I click on "//div[@class='dropdown']//a[contains(.,'Edit')]" "xpath_element" in the "Combined 001" "table_row"
     Then I should see "Preview"
     When I click on "Preview" "link"
-    # And I switch to "questionpreview" window
 
     # Set display and behaviour options
     And I set the following fields to these values:
@@ -106,10 +104,8 @@ Feature: Test algebra questions in combined question
     Then I should see "Combined 001"
 
     # Edit the copy and verify the form field contents.
-#    When I click on "Edit" "link" in the "Combined 001" "table_row"
     When I click on "//div[@class='dropdown']//a[contains(.,'Edit')]" "xpath_element" in the "Combined 001" "table_row"
     Then I should see "Edit question"
-#    When I click on "Edit question" "link"
     When I click on "//a[@role='menuitem']//span[contains(.,'Edit question')]" "xpath_element"
     Then the following fields match these values:
       | Question name   | Combined 001 |
