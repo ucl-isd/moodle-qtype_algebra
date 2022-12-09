@@ -26,10 +26,11 @@ Feature: Test algebra questions in combined question
     And I set the field "Question name" to "Combined 001"
     And I set the field "Question text" to "What is the square of 2xy? [[1:algebra]].<br/> What is the derivative of the function f(x) = x^2 f'(x) = [[2:algebra]]."
     Then I set the field "General feedback" to "The square of 2*x*y is 4*x^2*y^2 and the derivative of x^2 is 2*x."
-    And I press "Verify the question text and update the form"
+    #And I press "Verify the question text and update the form"
+    And I press "Save changes and continue editing"
 
     # Follow sub questions (The order of sub questions comes from the question text).
-    Then I follow "'algebra' input '1'"
+    Then I wait until the page is ready
     And I press "Blanks for 1 More Variables"
     And I set the following fields to these values:
       | id_subqalgebra1defaultmark     | 50%                                     |
@@ -43,7 +44,6 @@ Feature: Test algebra questions in combined question
       | id_subqalgebra1answer_0        | 4*x^2*y^2                               |
       | id_subqalgebra1generalfeedback  | Your square is incorrect               |
 
-    Then I follow "'algebra' input '2'"
     And I set the following fields to these values:
       | id_subqalgebra2defaultmark     | 50%                                     |
       | id_subqalgebra2compareby       | Evaluation                              |
@@ -62,8 +62,9 @@ Feature: Test algebra questions in combined question
     Then I should see "Combined 001"
 
     # Preview it.
-    When I click on "Preview" "link" in the "Combined 001" "table_row"
-    And I switch to "questionpreview" window
+    When I click on "//div[@class='dropdown']//a[contains(.,'Edit')]" "xpath_element" in the "Combined 001" "table_row"
+    Then I should see "Preview"
+    When I click on "Preview" "link"
 
     # Set display and behaviour options
     And I set the following fields to these values:
@@ -103,7 +104,9 @@ Feature: Test algebra questions in combined question
     Then I should see "Combined 001"
 
     # Edit the copy and verify the form field contents.
-    When I click on "Edit" "link" in the "Combined 001" "table_row"
+    When I click on "//div[@class='dropdown']//a[contains(.,'Edit')]" "xpath_element" in the "Combined 001" "table_row"
+    Then I should see "Edit question"
+    When I click on "//a[@role='menuitem']//span[contains(.,'Edit question')]" "xpath_element"
     Then the following fields match these values:
       | Question name   | Combined 001 |
       | Question text   | What is the square of 2xy? [[1:algebra]].<br/> What is the derivative of the function f(x) = x^2 f'(x) = [[2:algebra]]. |

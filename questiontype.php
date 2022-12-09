@@ -18,7 +18,7 @@
  * Question type class for the algebra question type.
  *
  * @package    qtype_algebra
- * @author  Roger Moore <rwmoore@ualberta.ca>
+ * @copyright  Roger Moore <rwmoore@ualberta.ca>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -31,10 +31,8 @@ require_once($CFG->dirroot . '/question/type/algebra/parser.php');
 /**
  * ALGEBRA QUESTION TYPE CLASS
  *
- * @package questionbank
- * @subpackage questiontypes
+ * @package qtype_algebra
  */
-
 class qtype_algebra extends question_type {
 
     /**
@@ -45,27 +43,50 @@ class qtype_algebra extends question_type {
      */
     public function extra_question_fields() {
         return array('qtype_algebra_options',
-                     'compareby',        // Name of comparison algorithm to use
-                     'nchecks',          // Number of evaluate checks to make when comparing by evaluation
-                     'tolerance',        // Max. fractional difference allowed for evaluation checks
-                     'allowedfuncs',     // Comma separated list of functions allowed in responses
-                     'disallow',         // Response which may be correct but which is not allowed
+                     'compareby',        // Name of comparison algorithm to use.
+                     'nchecks',          // Number of evaluate checks to make when comparing by evaluation.
+                     'tolerance',        // Max. fractional difference allowed for evaluation checks.
+                     'allowedfuncs',     // Comma separated list of functions allowed in responses.
+                     'disallow',         // Response which may be correct but which is not allowed.
                      'answerprefix'      // String which is placed in front of the asnwer box.
                      );
     }
 
+    /**
+     * Move files
+     *
+     * @param int $questionid
+     * @param int $oldcontextid
+     * @param int $newcontextid
+     * @return void
+     */
     public function move_files($questionid, $oldcontextid, $newcontextid) {
         parent::move_files($questionid, $oldcontextid, $newcontextid);
         $this->move_files_in_answers($questionid, $oldcontextid, $newcontextid);
         $this->move_files_in_hints($questionid, $oldcontextid, $newcontextid);
     }
 
+    /**
+     * Delete files
+     *
+     * @param int $questionid
+     * @param int $contextid
+     * @return void
+     */
     protected function delete_files($questionid, $contextid) {
         parent::delete_files($questionid, $contextid);
         $this->delete_files_in_answers($questionid, $contextid);
         $this->delete_files_in_hints($questionid, $contextid);
     }
 
+    /**
+     * Delete question
+     *
+     * @param int $questionid
+     * @param int $contextid
+     * @return void
+     * @throws dml_exception
+     */
     public function delete_question($questionid, $contextid) {
         global $DB;
         $DB->delete_records('qtype_algebra_options', array('questionid' => $questionid));
@@ -77,7 +98,8 @@ class qtype_algebra extends question_type {
     /**
      * Saves the questions variables to the database
      *
-     * This is called by {@link save_question_options()} to save the variables of the question to
+     * This is called by save_question_options()
+     * to save the variables of the question to
      * the database from the data in the submitted form. The method returns an array of the variables
      * IDs written to the database or, in the event of an error, throws an exception.
      *
@@ -128,10 +150,12 @@ class qtype_algebra extends question_type {
     protected function is_answer_empty($questiondata, $key) {
         return trim($questiondata->answer[$key]) == '';
     }
+
     /**
      * Saves question-type specific options
      *
-     * This is called by {@link save_question()} to save the question-type specific data from a
+     * This is called by save_question()
+     * to save the question-type specific data from a
      * submitted form. This method takes the form data and formats into the correct format for
      * writing to the database. It then calls the parent method to actually write the data.
      *
@@ -237,10 +261,10 @@ class qtype_algebra extends question_type {
      * This method is called by the format class when importing an algebra question from the
      * Moodle XML format.
      *
-     * @param $data structure containing the XML data
-     * @param $question question object to fill: ignored by this function (assumed to be null)
-     * @param $format format class importing the question
-     * @param $extra extra information (not required for importing this question in this format)
+     * @param object $data structure containing the XML data
+     * @param object $question question object to fill: ignored by this function (assumed to be null)
+     * @param qformat_xml $format format class importing the question
+     * @param stdClass $extra extra information (not required for importing this question in this format)
      * @return text string containing the question data in XML format
      */
     public function import_from_xml($data, $question, qformat_xml $format, $extra = null) {
@@ -311,9 +335,9 @@ class qtype_algebra extends question_type {
      * This method is called by the format class when exporting an algebra question into then
      * Moodle XML format.
      *
-     * @param $question question to be exported into XML format
-     * @param $format format class exporting the question
-     * @param $extra extra information (not required for exporting this question in this format)
+     * @param object $question question to be exported into XML format
+     * @param qformat_xml $format format class exporting the question
+     * @param object $extra extra information (not required for exporting this question in this format)
      * @return text string containing the question data in XML format
      */
     public function export_to_xml($question, qformat_xml $format, $extra = null) {
@@ -340,7 +364,13 @@ class qtype_algebra extends question_type {
         return $expout;
     }
 
-    // Gets all the question responses.
+    /**
+     * Gets all the question responses.
+     *
+     * @param object $question
+     * @param stdClass $state
+     * @return stdClass
+     */
     public function get_all_responses(&$question, &$state) {
         $result = new stdClass;
         $answers = array();
@@ -364,8 +394,7 @@ class qtype_algebra extends question_type {
      * This method will check to see if the argument it is given is already a parsed
      * expression and if not will attempt to parse it.
      *
-     * @param $expr expression which will be parsed
-     * @param $question question containing the expression or null if none
+     * @param object $expr expression which will be parsed
      * @return top term of the parse tree or a string if an exception is thrown
      */
     public function parse_expression($expr) {
@@ -399,6 +428,13 @@ class qtype_algebra extends question_type {
         }
     }
 
+    /**
+     * Initialise question instance
+     *
+     * @param question_definition $question
+     * @param object $questiondata
+     * @return void
+     */
     protected function initialise_question_instance(question_definition $question, $questiondata) {
         parent::initialise_question_instance($question, $questiondata);
         $question->variables = array();
@@ -416,10 +452,23 @@ class qtype_algebra extends question_type {
         $this->initialise_question_answers($question, $questiondata);
     }
 
+    /**
+     * Get random guess score
+     *
+     * @param object $questiondata
+     * @return int
+     */
     public function get_random_guess_score($questiondata) {
         return 0;
     }
 
+    /**
+     * Get possible responses
+     *
+     * @param stdClass $questiondata
+     * @return array[]
+     * @throws coding_exception
+     */
     public function get_possible_responses($questiondata) {
         $responses = array();
 
