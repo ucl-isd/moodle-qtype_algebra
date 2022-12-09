@@ -22,6 +22,10 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace qtype_algebra;
+
+use parser_exception;
+use qtype_algebra_parser;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -37,10 +41,13 @@ require_once($CFG->dirroot . '/question/type/algebra/parser.php');
  * @copyright  2018 Jean-Michel Vedrine
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-class qtype_algebra_parser_exception_test extends advanced_testcase {
+class parser_exception_test extends \advanced_testcase {
     /**
      * No close bracket.
+     *
+     * @covers \qtype_algebra::parser_mismatched_brackets
+     * @return void
+     * @throws parser_exception
      */
     public function test_parser_mismatched_brackets() {
         $this->expectException('parser_exception');
@@ -51,6 +58,10 @@ class qtype_algebra_parser_exception_test extends advanced_testcase {
 
     /**
      * Wrong number of arguments for function.
+     *
+     * @covers \qtype_algebra::parser_wrong_arguments_number
+     * @return void
+     * @throws parser_exception
      */
     public function test_parser_wrong_arguments_number() {
         $this->expectException('parser_exception');
@@ -61,6 +72,10 @@ class qtype_algebra_parser_exception_test extends advanced_testcase {
 
     /**
      * Plus or minus in an invalid location.
+     *
+     * @covers \qtype_algebra::parser_invalid_minus
+     * @return void
+     * @throws parser_exception
      */
     public function test_parser_invalid_minus() {
         $this->expectException('parser_exception');
@@ -71,6 +86,10 @@ class qtype_algebra_parser_exception_test extends advanced_testcase {
 
     /**
      * Operator missing one argument.
+     *
+     * @covers \qtype_algebra::parser_wrong_arguments_number2
+     * @return void
+     * @throws parser_exception
      */
     public function test_parser_wrong_arguments_number2() {
         $this->expectException('parser_exception');

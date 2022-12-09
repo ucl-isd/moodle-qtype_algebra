@@ -21,11 +21,6 @@
  * @copyright  2019 Jean-Michel Vedrinr
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-
-defined('MOODLE_INTERNAL') || die();
-
-
 class qtype_algebra_embedded_renderer extends qtype_combined_text_entry_renderer_base {
 
 }
