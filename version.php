@@ -18,7 +18,7 @@
  * The version file for qtype_algebra
  *
  * @package    qtype_algebra
- * @copyright  Matthias Opitz / UCL <m.opitz@ucl.ac.uk>
+ * @copyright  Roger Moore <rwmoore@ualberta.ca>, Matthias Opitz / UCL <m.opitz@ucl.ac.uk>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
