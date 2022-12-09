@@ -15,6 +15,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * The AJAX file.
+ *
  * @package    qtype_algebra
  * @copyright  2018 Jean-Michel Vedrine
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -32,13 +34,6 @@ $expr  = required_param('expr', PARAM_RAW);
 
 // This should be accessed by only valid logged in user.
 require_login(null, false);
-
-/*
-if (!confirm_sesskey()) {
-    header('HTTP/1.1 403 Forbidden');
-    die();
-}
-*/
 
 try {
     $vars = explode(',', $vars);

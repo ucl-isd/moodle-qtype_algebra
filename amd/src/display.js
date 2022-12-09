@@ -14,7 +14,7 @@ define(['jquery', 'core/config', 'core/notification'], function($, config, notif
                     .done(function(data) {
                         // Replace TeX form in page.
                         var displaydiv = $('#' + display + '_display');
-                        displaydiv.html("<span class=\"filter_mathjaxloader_equation\">" + data +"</span>");
+                        displaydiv.html("<span class=\"filter_mathjaxloader_equation\">" + data + "</span>");
                         // Notify the filters about the modified node.
                         require(['core/event'], function(event) {
                             event.notifyFilterContentUpdated(displaydiv);

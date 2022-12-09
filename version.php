@@ -15,16 +15,18 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * The version file for qtype_algebra
+ *
  * @package    qtype_algebra
- * @copyright  Roger Moore <rwmoore@ualberta.ca>
+ * @copyright  Roger Moore <rwmoore@ualberta.ca>, Matthias Opitz / UCL <m.opitz@ucl.ac.uk>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'qtype_algebra';
-$plugin->version   = 2022071700;
+$plugin->version   = 2022120500;
 
-$plugin->requires  = 2016052300;
-$plugin->release   = '1.95 for Moodle 3.1 ... 3.9';
+$plugin->requires  = 2022041900;
+$plugin->release   = '2.0 for Moodle 4.0+';
 $plugin->maturity  = MATURITY_STABLE;

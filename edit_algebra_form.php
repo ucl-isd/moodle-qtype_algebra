@@ -15,6 +15,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Form to edit algebra question.
+ *
  * @package    qtype_algebra
  * @copyright  Roger Moore <rwmoore@ualberta.ca>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -37,6 +39,9 @@ define("SYMB_QUESTION_NUMANS_ADD", 1);
 class qtype_algebra_edit_form extends question_edit_form {
     /** @var int we always show at least this many sets of unit fields. */
     const VARIABLES_MIN_REPEATS = 1;
+    /**
+     * @var int
+     */
     const VARIABLES_TO_ADD = 2;
     /**
      * Add question-type specific form fields.
@@ -50,8 +55,7 @@ class qtype_algebra_edit_form extends question_edit_form {
                                                 get_string('algebraoptions', 'qtype_algebra'));
         // Add the select control which will select the comparison type to use.
         $mform->addElement('select', 'compareby', get_string('compareby', 'qtype_algebra'),
-                           array( "sage"  => get_string('comparesage', 'qtype_algebra'),
-                                  "eval"  => get_string('compareeval', 'qtype_algebra'),
+                           array( "eval"  => get_string('compareeval', 'qtype_algebra'),
                                   "equiv" => get_string('compareequiv', 'qtype_algebra')
                                  ));
         $mform->addHelpButton('compareby', 'compareby', 'qtype_algebra');
@@ -169,10 +173,23 @@ class qtype_algebra_edit_form extends question_edit_form {
 
         return $grouparray;
     }
+
+    /**
+     * Get more choices string.
+     *
+     * @return lang_string|string
+     * @throws coding_exception
+     */
     protected function get_more_choices_string() {
         return get_string('addmoreanswerblanks', 'qtype_algebra');
     }
 
+    /**
+     * Data preprocessing.
+     *
+     * @param object $question
+     * @return object
+     */
     protected function data_preprocessing($question) {
         $question = parent::data_preprocessing($question);
         $question = $this->data_preprocessing_answers($question);
@@ -189,13 +206,15 @@ class qtype_algebra_edit_form extends question_edit_form {
 
         return $question;
     }
+
     /**
      * Sets the existing values into the form for the question specific data.
      *
      * This method copies the data from the existing database record into the form fields as default
      * values for the various elements.
      *
-     * @param $question the question object from the database being used to fill the form
+     * @param object $question the question object from the database being used to fill the form
+     * @return void
      */
     public function set_data($question) {
         // Check to see if there are any existing question options, if not then just call
@@ -256,8 +275,10 @@ class qtype_algebra_edit_form extends question_edit_form {
      * This method performs some basic sanity checks on the form data before it gets converted
      * into a database record.
      *
-     * @param $data the data from the form which needs to be checked
-     * @param $files some files - I don't know what this is for! - files defined in the form??
+     * @param object $data the data from the form which needs to be checked
+     * @param object $files some files - I don't know what this is for! - files defined in the form??
+     * @return array
+     * @throws coding_exception
      */
     public function validation($data, $files) {
 
@@ -281,7 +302,7 @@ class qtype_algebra_edit_form extends question_edit_form {
                 continue;
             }
             // Check that this variable does not have the same name as a function.
-            if (in_array($trimvar, qtype_algebra_parser::$functions) or in_array($trimvar, qtype_algebra_parser::$specials)) {
+            if (in_array($trimvar, qtype_algebra_parser::$functions) || in_array($trimvar, qtype_algebra_parser::$specials)) {
                 $errors['variables['.$key.']'] = get_string('illegalvarname', 'qtype_algebra', $trimvar);
             }
             // Check that this variable has not been defined before.
@@ -396,6 +417,11 @@ class qtype_algebra_edit_form extends question_edit_form {
         return $errors;
     }
 
+    /**
+     * Get question type.
+     *
+     * @return string
+     */
     public function qtype() {
         return 'algebra';
     }

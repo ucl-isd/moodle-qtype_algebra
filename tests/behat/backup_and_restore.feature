@@ -29,7 +29,9 @@ Feature: Test duplicating a quiz containing an Algebra question
     And I restore "test_backup.mbz" backup into a new course using this options:
       | Schema | Course name | Course 2 |
     And I navigate to "Question bank" in current page administration
-    And I click on "Edit" "link" in the "Algebra question" "table_row"
+    When I click on "//div[@class='dropdown']//a[contains(.,'Edit')]" "xpath_element" in the "Algebra question" "table_row"
+    Then I should see "Edit question"
+    When I click on "//a[@role='menuitem']//span[contains(.,'Edit question')]" "xpath_element"
     Then the following fields match these values:
       | Question name        | Algebra question                                  |
       | Question text        | P(x) = 3x and Q(x) = 4x. Calculate (P + Q)(x)     |

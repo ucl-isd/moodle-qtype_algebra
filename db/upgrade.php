@@ -22,8 +22,17 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
-
+/**
+ * Upgrade XMLDB for qtype_algebra.
+ *
+ * @param object $oldversion
+ * @return bool
+ * @throws ddl_exception
+ * @throws ddl_field_missing_exception
+ * @throws ddl_table_missing_exception
+ * @throws downgrade_exception
+ * @throws upgrade_exception
+ */
 function xmldb_qtype_algebra_upgrade($oldversion=0) {
 
     global $CFG, $THEME, $DB;

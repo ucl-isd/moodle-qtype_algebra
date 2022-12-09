@@ -24,7 +24,8 @@ Feature: Test exporting Algebra questions
     And I am on "Course 1" course homepage
 
   Scenario: Export an Algebra question
-    When I navigate to "Question bank > Export" in current page administration
+    When I navigate to "Question bank" in current page administration
+    And I select "Export" from the "jump" singleselect
     And I set the field "id_format_xml" to "1"
     And I press "Export questions to file"
     Then following "click here" should download between "1100" and "1300" bytes
