@@ -31,18 +31,43 @@ define('SYMB_QUESTION_NUMANS_ADD', 1);
 define('SYMB_QUESTION_NUMVARS_ADD', 1);
 define('SYMB_QUESTION_NUMVARS_START', 1);
 
+/**
+ * Class for combined algebra types.
+ *
+ * @package   qtype_algebra
+ * @copyright  2019 Jean-Michel Vedrine
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class qtype_combined_combinable_type_algebra extends qtype_combined_combinable_type_base {
 
+    /**
+     * @var string
+     */
     protected $identifier = 'algebra';
 
+    /**
+     * Extra questoon properties.
+     *
+     * @return array
+     */
     protected function extra_question_properties() {
         return array('answerprefix' => '', 'allowedfuncs' => array('all' => 1));
     }
 
+    /**
+     * Extra answer properties.
+     *
+     * @return array
+     */
     protected function extra_answer_properties() {
         return array('fraction' => '1', 'feedback' => array('text' => '', 'format' => FORMAT_PLAIN));
     }
 
+    /**
+     * Subq form fragment question option fields.
+     *
+     * @return null[]
+     */
     public function subq_form_fragment_question_option_fields() {
         return array('compareby' => null,
                      'nchecks' => null,
@@ -52,26 +77,49 @@ class qtype_combined_combinable_type_algebra extends qtype_combined_combinable_t
 }
 
 
+/**
+ * Class for combined algebra questions.
+ *
+ * @package   qtype_algebra
+ * @copyright  2019 Jean-Michel Vedrine
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class qtype_combined_combinable_algebra extends qtype_combined_combinable_text_entry {
     /**
      * Get the form fields needed to edit one variable.
+     *
      * @param MoodleQuickForm $mform the form being built.
      * @return array of form fields.
      */
     protected function variable_group($mform) {
         $grouparray = array();
-        $grouparray[] = $mform->createElement('text', $this->form_field_name('variable'), get_string('variablename', 'qtype_algebra'), array('size' => 10));
-        $grouparray[] = $mform->createElement('text', $this->form_field_name('varmin'), get_string('varmin', 'qtype_algebra'), array('size' => 10));
-        $grouparray[] = $mform->createElement('text', $this->form_field_name('varmax'), get_string('varmax', 'qtype_algebra'), array('size' => 10));
+        $grouparray[] = $mform->createElement(
+            'text',
+            $this->form_field_name('variable'),
+            get_string('variablename', 'qtype_algebra'),
+            array('size' => 10));
+        $grouparray[] = $mform->createElement(
+            'text',
+            $this->form_field_name('varmin'),
+            get_string('varmin', 'qtype_algebra'),
+            array('size' => 10));
+        $grouparray[] = $mform->createElement(
+            'text',
+            $this->form_field_name('varmax'),
+            get_string('varmax', 'qtype_algebra'),
+            array('size' => 10));
 
         return $grouparray;
     }
 
     /**
-     * @param moodleform      $combinedform
+     * Add form fragment.
+     *
+     * @param moodleform $combinedform
      * @param MoodleQuickForm $mform
-     * @param                 $repeatenabled
-     * @return mixed
+     * @param stdClass $repeatenabled
+     * @return void
+     * @throws coding_exception
      */
     public function add_form_fragment(moodleform $combinedform, MoodleQuickForm $mform, $repeatenabled) {
         global $CFG;
@@ -91,7 +139,11 @@ class qtype_combined_combinable_algebra extends qtype_combined_combinable_text_e
         $mform->setType($this->form_field_name('tolerance'), PARAM_NUMBER);
         $mform->setDefault($this->form_field_name('tolerance'), '0.001');
         // Add an entry for a disallowed expression.
-        $mform->addElement('text', $this->form_field_name('disallow'), get_string('disallow', 'qtype_algebra'), array('size' => 55));
+        $mform->addElement(
+            'text',
+            $this->form_field_name('disallow'),
+            get_string('disallow', 'qtype_algebra'),
+            array('size' => 55));
         $mform->setType($this->form_field_name('disallow'), PARAM_RAW);
         if ($this->questionrec !== null) {
             $countvars = count($this->questionrec->options->variables);
@@ -106,8 +158,15 @@ class qtype_combined_combinable_algebra extends qtype_combined_combinable_text_e
         $repeatedoptions[$this->form_field_name('variable')]['type'] = PARAM_RAW;
         $repeatedoptions[$this->form_field_name('varmin')]['type'] = PARAM_RAW;
         $repeatedoptions[$this->form_field_name('varmax')]['type'] = PARAM_RAW;
-        $combinedform->repeat_elements($variablefields, $repeatsatstart, $repeatedoptions, $this->form_field_name('novariables'), $this->form_field_name('addvariables'),
-                               SYMB_QUESTION_NUMVARS_ADD, get_string('addmorevariableblanks', 'qtype_algebra'), true);
+        $combinedform->repeat_elements(
+            $variablefields,
+            $repeatsatstart,
+            $repeatedoptions,
+            $this->form_field_name('novariables'),
+            $this->form_field_name('addvariables'),
+            SYMB_QUESTION_NUMVARS_ADD,
+            get_string('addmorevariableblanks', 'qtype_algebra'),
+            true);
         $answerel = array($mform->createElement('text',
                                                 $this->form_field_name('answer'),
                                                 get_string('answerx', 'qtype_algebra'),
@@ -136,6 +195,13 @@ class qtype_combined_combinable_algebra extends qtype_combined_combinable_text_e
         $mform->setType($this->form_field_name('answer'), PARAM_RAW_TRIMMED);
     }
 
+    /**
+     * Date to form.
+     *
+     * @param object $context
+     * @param object $fileoptions
+     * @return array|array[]
+     */
     public function data_to_form($context, $fileoptions) {
         $answers = array('answer' => array());
         $variables = array('variable' => array(), 'varmin' => array(), 'varmax' => array());
@@ -154,6 +220,12 @@ class qtype_combined_combinable_algebra extends qtype_combined_combinable_text_e
         return $data;
     }
 
+    /**
+     * Validate.
+     *
+     * @return array
+     * @throws coding_exception
+     */
     public function validate() {
         $errors = array();
         // Regular expression string to match a number.
@@ -173,7 +245,7 @@ class qtype_combined_combinable_algebra extends qtype_combined_combinable_text_e
                 continue;
             }
             // Check that this variable does not have the same name as a function.
-            if (in_array($trimvar, qtype_algebra_parser::$functions) or in_array($trimvar, qtype_algebra_parser::$specials)) {
+            if (in_array($trimvar, qtype_algebra_parser::$functions) || in_array($trimvar, qtype_algebra_parser::$specials)) {
                 $errors[$this->form_field_name('variables['.$key.']')] = get_string('illegalvarname', 'qtype_algebra', $trimvar);
             }
             // Check that this variable has not been defined before.
@@ -238,7 +310,8 @@ class qtype_combined_combinable_algebra extends qtype_combined_combinable_text_e
                 // Do this by looking for a non-empty array to be returned from the array_diff
                 // between the list of all declared variables and the variables in this answer.
                 if ($d = array_diff($tmpvars, $varlist)) {
-                    $errors[$this->form_field_name('answer['.$key.']')] = get_string('undefinedvar', 'qtype_algebra', "'".implode("', '", $d)."'");
+                    $errors[$this->form_field_name('answer['.$key.']')] =
+                        get_string('undefinedvar', 'qtype_algebra', "'".implode("', '", $d)."'");
                 }
                 // Do the same for functions which we did for variables.
                 $ansfuncs = array_merge($ansfuncs, array_diff($expr->get_functions(), $ansfuncs));
@@ -280,10 +353,20 @@ class qtype_combined_combinable_algebra extends qtype_combined_combinable_text_e
         return $errors;
     }
 
+    /**
+     * Get sup sub editor option.
+     *
+     * @return null
+     */
     public function get_sup_sub_editor_option() {
         return null;
     }
 
+    /**
+     * Has submitted data.
+     *
+     * @return bool
+     */
     public function has_submitted_data() {
         return $this->submitted_data_array_not_empty('answer') || parent::has_submitted_data();
     }

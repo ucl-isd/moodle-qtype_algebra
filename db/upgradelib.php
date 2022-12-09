@@ -17,19 +17,15 @@
 /**
  * Upgrade library code for the algebra question type.
  *
- * @package    qtype
- * @subpackage algebra
+ * @package    qtype_algebra
  * @copyright  2010 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-
-defined('MOODLE_INTERNAL') || die();
-
-
 /**
- * Class for converting attempt data for algebra questions when upgrading
- * attempts to the new question engine.
+ * Class for converting attempt data for algebra questions
+ *
+ * when upgrading attempts to the new question engine.
  *
  * This class is used by the code in question/engine/upgrade/upgradelib.php.
  *
@@ -37,6 +33,11 @@ defined('MOODLE_INTERNAL') || die();
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class qtype_algebra_qe2_attempt_updater extends question_qtype_attempt_updater {
+    /**
+     * The reight answer.
+     *
+     * @return void
+     */
     public function right_answer() {
         foreach ($this->question->options->answers as $ans) {
             if ($ans->fraction > 0.999) {
@@ -45,10 +46,22 @@ class qtype_algebra_qe2_attempt_updater extends question_qtype_attempt_updater {
         }
     }
 
+    /**
+     * Was answered.
+     *
+     * @param stdClass $state
+     * @return bool
+     */
     public function was_answered($state) {
         return !empty($state->answer);
     }
 
+    /**
+     * Response summary.
+     *
+     * @param stdClass $state
+     * @return null
+     */
     public function response_summary($state) {
         if (!empty($state->answer)) {
             return $state->answer;
@@ -57,12 +70,32 @@ class qtype_algebra_qe2_attempt_updater extends question_qtype_attempt_updater {
         }
     }
 
+    /**
+     * Set 1st step data elements.
+     *
+     * @param stdClass $state
+     * @param stdClass $data
+     * @return void
+     */
     public function set_first_step_data_elements($state, &$data) {
     }
 
+    /**
+     * Supply missing 1st step data.
+     *
+     * @param stdClass $data
+     * @return void
+     */
     public function supply_missing_first_step_data(&$data) {
     }
 
+    /**
+     * Set data elements for step.
+     *
+     * @param stdClass $state
+     * @param stdClass $data
+     * @return void
+     */
     public function set_data_elements_for_step($state, &$data) {
         if (!empty($state->answer)) {
             $data['answer'] = $state->answer;

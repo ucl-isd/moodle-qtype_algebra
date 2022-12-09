@@ -24,8 +24,6 @@
 
 namespace qtype_algebra\output;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Mobile output class for algebra question type
  *

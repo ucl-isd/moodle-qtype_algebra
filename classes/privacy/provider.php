@@ -24,8 +24,6 @@
 
 namespace qtype_algebra\privacy;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Privacy main class.
  *

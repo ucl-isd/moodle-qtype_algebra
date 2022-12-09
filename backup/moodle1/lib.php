@@ -15,19 +15,17 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Algebra question type conversion handler.
+ *
  * @package    qtype_algebra
  * @copyright  Roger Moore <rwmoore@ualberta.ca>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-defined('MOODLE_INTERNAL') || die();
-
-/**
- * Algebra question type conversion handler.
- */
 class moodle1_qtype_algebra_handler extends moodle1_qtype_handler {
 
     /**
+     * Get question subpaths.
+     *
      * @return array
      */
     public function get_question_subpaths() {
@@ -40,6 +38,11 @@ class moodle1_qtype_algebra_handler extends moodle1_qtype_handler {
 
     /**
      * Appends the algebra specific information to the question
+     *
+     * @param array $data
+     * @param array $raw
+     * @return void
+     * @throws xml_writer_exception
      */
     public function process_question(array $data, array $raw) {
         // Convert and write the answers first.

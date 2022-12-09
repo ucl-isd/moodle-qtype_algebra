@@ -14,10 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-// Parser code for the Moodle Algebra question type
-// Moodle algebra question type class
-// Author: Roger Moore <rwmoore 'at' ualberta.ca>
-// License: GNU Public License version 3.
+/**
+ * Parser code for the Moodle Algebra question type Moodle algebra question type class
+ *
+ * @package    qtype_algebra
+ * @copyright  Roger Moore <rwmoore 'at' ualberta.ca>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -30,9 +33,13 @@ defined('MOODLE_INTERNAL') || die();
  * In this version, if both strings have equal length, string order is used. So this
  * version of the sort is stable.
  *
- * @param $a first string to compare
- * @param $b second string to compare
- * @return -1 if $a is longer than $b,  and +1 if $a is shorter
+ *
+ * @package     qtype_algebra
+ * @author      Roger Moore <rwmoore 'at' ualberta.ca>
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @param string $a first string to compare
+ * @param string $b second string to compare
+ * @return numeric -1 if $a is longer than $b,  and +1 if $a is shorter
  */
 function qtype_algebra_parser_strlen_sort($a, $b) {
     // Get the two string lengths once so we don't have to repeat the function call.
@@ -48,8 +55,17 @@ function qtype_algebra_parser_strlen_sort($a, $b) {
 
 /**
  * Base class for all the types of exception we throw.
+ *
+ * @package     qtype_algebra
+ * @author      Roger Moore <rwmoore 'at' ualberta.ca>
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class parser_exception extends moodle_exception {
+    /**
+     * The constructor
+     *
+     * @param object $error
+     */
     public function __construct($error) {
         parent::__construct('exceptionmessage', 'qtype_algebra', '', $error);
     }
@@ -60,12 +76,20 @@ class parser_exception extends moodle_exception {
  * A single algebraic term is considered to be either an operation, for example addition,
  * subtraction, raising to a power etc. or something operated on, such as a number or
  * variable. Each type of term implements a subclass of this base class.
+ *
+ * @package     qtype_algebra
+ * @author      Roger Moore <rwmoore 'at' ualberta.ca>
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class qtype_algebra_parser_term {
     // Member variables.
+    /** @var string */
     public $_value;             // String of the actual term itself.
+    /** @var array */
     public $_arguments = array(); // Array of arguments in class form.
+    /** @var array */
     public $_formats;           // Array of format strings.
+    /** @var int */
     public $_nargs;             // Number of arguments for this term.
 
     /**
@@ -76,10 +100,10 @@ class qtype_algebra_parser_term {
      * when converting the term in various strng formats, the parser text associated
      * with the term and whether the term is one which commutes.
      *
-     * @param $nargs number of arguments which this type of term requires
-     * @param $formats an array of the format strings for this term keyed by type
-     * @param $text the text from the expression associated with the array
-     * @param $commutes if set to true then this term commutes (only for 2 argument terms)
+     * @param int $nargs number of arguments which this type of term requires
+     * @param array $formats an array of the format strings for this term keyed by type
+     * @param string $text the text from the expression associated with the array
+     * @param bool $commutes if set to true then this term commutes (only for 2 argument terms)
      */
     public function __construct($nargs, $formats,  $text = '', $commutes = false) {
         $this->_value = $text;
@@ -96,7 +120,7 @@ class qtype_algebra_parser_term {
      * string representation. The method is recursive because it needs to convert the
      * arguments of the term into strings and so it will walk down the parse tree.
      *
-     * @param $method name of method to call to convert arguments into strings
+     * @param object $method name of method to call to convert arguments into strings
      * @return array of the arguments that, with a format string, can be passed to sprintf
      */
     public function print_args($method) {
@@ -118,10 +142,11 @@ class qtype_algebra_parser_term {
     /**
      * Produces a 'prettified' string of the expression using the standard input syntax.
      *
-     * This method will use the {@link print_args} method to convert the term and all its
+     * This method will use the print_args() method to convert the term and all its
      * arguments into a string.
      *
      * @return string input syntax format string of the expression
+     * @throws parser_exception
      */
     public function str() {
         // First check to see if the class has been given all the arguments.
@@ -137,12 +162,13 @@ class qtype_algebra_parser_term {
     /**
      * Produces a LaTeX formatted string of the expression.
      *
-     * This method will use the {@link print_args} method to convert the term and all its
+     * This method will use the print_args() method to convert the term and all its
      * arguments into a LaTeX formatted string. This can then be given to the main Moodle
      * engine, with TeX filter enabled, to produce a graphical representation of the
      * expression.
      *
-     * @return LaTeX format string of the expression
+     * @return string LaTeX format string of the expression
+     * @throws parser_exception
      */
     public function tex() {
         // First check to see if the class has been given all the arguments.
@@ -158,12 +184,13 @@ class qtype_algebra_parser_term {
     /**
      * Produces a SAGE formatted string of the expression.
      *
-     * This method will use the {@link print_args} method to convert the term and all its
+     * This method will use the print_args() method to convert the term and all its
      * arguments into a SAGE formatted string. This can then be passed to SAGE via XML-RPC
-     * for symbolic comparisons. The format is very similar to the {@link str} method but
+     * for symbolic comparisons. The format is very similar to the str() method but
      * has all multiplications made explicit with an asterix.
      *
-     * @return SAGE format string of the expression
+     * @return object SAGE format string of the expression
+     * @throws parser_exception
      */
     public function sage() {
         // First check to see if the class has been given all the arguments.
@@ -206,7 +233,10 @@ class qtype_algebra_parser_term {
      * multiplying two numbers. However this can be omitted when multiplying two variables,
      * a variable and a function etc.
      *
-     * @param $args array to set the arguments of the term to
+     * @param array $args array to set the arguments of the term to
+     * @return void
+     * @throws coding_exception
+     * @throws parser_exception
      */
     public function set_arguments($args) {
         if (count($args) != $this->_nargs) {
@@ -223,8 +253,8 @@ class qtype_algebra_parser_term {
      * an exception will be thrown if the correct number of arguments are not present. Otherwise
      * the function returns false.
      *
-     * @param $exc if true then an exception will be thrown if the number of arguments is incorrect
-     * @return true if the correct number of arguments are present, false otherwise
+     * @param object $exc if true then an exception will be thrown if the number of arguments is incorrect
+     * @return bool true if the correct number of arguments are present, false otherwise
      */
     public function check_arguments($exc = true) {
         $retval = (count($this->_arguments) == $this->_nargs);
@@ -238,11 +268,11 @@ class qtype_algebra_parser_term {
     /**
      * Returns a list of all the variable names found in the expression.
      *
-     * This method uses the {@link collect} method to walk down the parse tree and collect
+     * This method uses the collect() method to walk down the parse tree and collect
      * a list of all the variables which the parser has found in the expression. The names
      * of the variables are then returned.
      *
-     * @return an array containing all the variables names in the expression
+     * @return array an array containing all the variables names in the expression
      */
     public function get_variables() {
         $list = array();
@@ -253,11 +283,11 @@ class qtype_algebra_parser_term {
     /**
      * Returns a list of all the function names found in the expression.
      *
-     * This method uses the {@link collect} method to walk down the parse tree and collect
+     * This method uses the collect() method to walk down the parse tree and collect
      * a list of all the functions which the parser has found in the expression. The names
      * of the functions are then returned.
      *
-     * @return an array containing all the function names used in the expression
+     * @return array an array containing all the function names used in the expression
      */
     public function get_functions() {
         $list = array();
@@ -272,11 +302,11 @@ class qtype_algebra_parser_term {
      * of the current term. The method simply adds the current term to the given imput array
      * using a key set to the value of the term but only if the term matches the selected type.
      * In this way terms only a single entry per term value is return which is the functionality
-     * required for the {@link get_variables} and {@link get_functions} methods.
+     * required for the get_variables() and get_functions() methods.
      *
-     * @param $list the array to add the term to if it matches the type
-     * @param $type the name of the type of term to collect.
-     * @return an array containing all the terms of the selected type keyed by their value
+     * @param array $list the array to add the term to if it matches the type
+     * @param object $type the name of the type of term to collect.
+     * @return array an array containing all the terms of the selected type keyed by their value
      */
     public function collect(&$list, $type) {
         // Add this class to the list if of the correct type.
@@ -300,8 +330,8 @@ class qtype_algebra_parser_term {
      * the class of each term. Terms which require more than this, for example comparing values
      * too, override this method in theor own classes.
      *
-     * @param $term the term to compare to the current one
-     * @return true if the terms match, false otherwise
+     * @param object $term the term to compare to the current one
+     * @return bool true if the terms match, false otherwise
      */
     public function equals($term) {
         // Default method just checks to ensure that the Terms are both of the same type.
@@ -311,14 +341,14 @@ class qtype_algebra_parser_term {
     /**
      * Compares this term, including any arguments, with another term.
      *
-     * This method uses the {@link equals} method to see if the current and given term match.
+     * This method uses the equals() method to see if the current and given term match.
      * It then looks at any arguments which the two terms have and, recursively, calls their
      * compare methods to determine if they also match. For terms with two arguments which
      * also commute the reverse ordering of the arguments is also tried if the first order
      * fails to match.
      *
-     * @param $expr top level term of an expression to compare against
-     * @return true if the expressions match, false otherwise
+     * @param object $expr top level term of an expression to compare against
+     * @return bool true if the expressions match, false otherwise
      */
     public function equivalent($expr) {
         // Check that the argument is also a term.
@@ -342,11 +372,11 @@ class qtype_algebra_parser_term {
             case 2:
                 // Now it gets interesting. First we compare the two arguments in the same
                 // order and see what we get...
-                if ($this->_arguments[0]->equivalent($expr->_arguments[0]) and
+                if ($this->_arguments[0]->equivalent($expr->_arguments[0]) &&
                    $this->_arguments[1]->equivalent($expr->_arguments[1])) {
                     // Both arguments are equivalent so we have a match.
                     return true;
-                } else if ($this->_commutes and $this->_arguments[0]->equivalent($expr->_arguments[1]) and
+                } else if ($this->_commutes && $this->_arguments[0]->equivalent($expr->_arguments[1]) &&
                         $this->_arguments[1]->equivalent($expr->_arguments[0])) {
                     // Otherwise if the operator commutes we can see if the first argument matches
                     // the second argument and vice versa.
@@ -362,7 +392,7 @@ class qtype_algebra_parser_term {
     /**
      * Returns the number of arguments required by the term.
      *
-     * @return the number of arguments required by the term
+     * @return int the number of arguments required by the term
      */
     public function n_args() {
         return $this->_nargs;
@@ -376,8 +406,8 @@ class qtype_algebra_parser_term {
      * which must be implemented by all subclasses. Failure to do so will generate an
      * exception when the method is called.
      *
-     * @param $params array of values keyed by variable name
-     * @return the numerical value of the term given the provided values for the variables
+     * @param array $params array of values keyed by variable name
+     * @return numeric the numerical value of the term given the provided values for the variables
      */
     public function evaluate($params) {
         throw new parser_exception(get_string('noevaluate', 'qtype_algebra', $this->_value));
@@ -390,9 +420,10 @@ class qtype_algebra_parser_term {
      * a nicely formatted dump of the term structure. This is mainly useful for debugging
      * purposes.
      *
-     * @param $indent string containing the indentation to use
-     * @param $params variable values to use if an evaluation is also desired
-     * @return a string indicating the type of the term
+     * @param object $params variable values to use if an evaluation is also desired
+     * @param string $indent string containing the indentation to use
+     * @return void a string indicating the type of the term
+     * @throws parser_exception
      */
     public function dump(&$params = array(), $indent = '') {
         echo "$indent<Term type '".get_class($this).'\' with value \''.$this->_value;
@@ -413,7 +444,7 @@ class qtype_algebra_parser_term {
      * string, such as happens when echoing or printing it. It simply returns a string
      * indicating the type of the parser term.
      *
-     * @return a string indicating the type of the term
+     * @return string a string indicating the type of the term
      */
     public function __toString() {
         return '<Algebraic parser term of type \''.get_class($this).'\'>';
@@ -427,6 +458,10 @@ class qtype_algebra_parser_term {
  * It takes no arguments and will never be found in a parser tree. This term is solely
  * to give a valid return type for an empty string condition and so avoids the need to
  * throw an exception in such cases.
+ *
+ * @package     qtype_algebra
+ * @author      Roger Moore <rwmoore 'at' ualberta.ca>
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class qtype_algebra_parser_nullterm extends qtype_algebra_parser_term {
     /** @var The TeX multiply operator. */
@@ -447,7 +482,7 @@ class qtype_algebra_parser_nullterm extends qtype_algebra_parser_term {
      * Since this class is represented by an empty string which has no formatting fields
      * we override the base class method to return an empty array.
      *
-     * @param $method name of method to call to convert arguments into strings
+     * @param object $method name of method to call to convert arguments into strings
      * @return array of the arguments that, with a format string, can be passed to sprintf
      */
     public function print_args($method) {
@@ -459,7 +494,8 @@ class qtype_algebra_parser_nullterm extends qtype_algebra_parser_term {
      *
      * Since this is an empty term we define the evaluation as zero regardless of the parameters.
      *
-     * @param $params array of the variable values to use
+     * @param array $params array of the variable values to use
+     * @return float|int|string
      */
     public function evaluate($params) {
         // Return something which is not a number.
@@ -467,7 +503,10 @@ class qtype_algebra_parser_nullterm extends qtype_algebra_parser_term {
     }
 
     // Static class properties.
+
+    /** Number of arguments */
     const NARGS = 0;
+    /** @var array */
     private static $formats = array('str' => '',
                                   'tex' => '');
 }
@@ -479,6 +518,10 @@ class qtype_algebra_parser_nullterm extends qtype_algebra_parser_term {
  * All purely numerical quantities will be represented by this type of class. There are
  * two basic types of numbers: non-exponential and exponential. Both types are handled by
  * this single class.
+ *
+ * @package     qtype_algebra
+ * @author      Roger Moore <rwmoore 'at' ualberta.ca>
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class qtype_algebra_parser_number extends qtype_algebra_parser_term {
 
@@ -488,7 +531,8 @@ class qtype_algebra_parser_number extends qtype_algebra_parser_term {
      * This function initializes an instance of a number term using the string which
      * matches the number's regular expression.
      *
-     * @param $text string matching the number regular expression
+     * @param string $text string matching the number regular expression
+     * @throws dml_exception
      */
     public function __construct($text = '') {
         // Unfortunately PHP maths will only support a '.' as a decimal point and will not support
@@ -516,6 +560,8 @@ class qtype_algebra_parser_number extends qtype_algebra_parser_term {
      * This method will convert the number into a nagetive one. It is called when
      * the parser finds a subtraction operator in front of the number which does
      * not have a variable or another number preceding it.
+     *
+     * @return void
      */
     public function set_negative() {
         // Prepend a minus sign to both the base and total value strings.
@@ -530,8 +576,8 @@ class qtype_algebra_parser_number extends qtype_algebra_parser_term {
      * This is a two step process. First we use the base class equals method to ensure
      * that we are comparing two numbers. Then we check that the two have the same value.
      *
-     * @param $expt the term to compare to the current one
-     * @return true if the terms match, false otherwise
+     * @param object $expr the term to compare to the current one
+     * @return bool true if the terms match, false otherwise
      */
     public function equals($expr) {
         // Call the default method first to check type.
@@ -549,7 +595,7 @@ class qtype_algebra_parser_number extends qtype_algebra_parser_term {
      * without an exponent. This method determines which to use and then pushes the correct
      * arguments into the array which is returned.
      *
-     * @param $method name of method to call to convert arguments into strings
+     * @param object $method name of method to call to convert arguments into strings
      * @return array of the arguments that, with a format string, can be passed to sprintf
      */
     public function print_args($method) {
@@ -575,14 +621,16 @@ class qtype_algebra_parser_number extends qtype_algebra_parser_term {
      * All this method does is return the string representing the number cast as a double
      * precision floating point variable.
      *
-     * @param $params array of the variable values to use
+     * @param array $params array of the variable values to use
      */
     public function evaluate($params) {
         return doubleval($this->_value);
     }
 
     // Static class properties.
+    /** Number of arguments */
     const NARGS = 0;
+    /** @var array */
     private static $formats = array('str' => '%s',
                                   'tex' => '%s ');
 }
@@ -596,9 +644,14 @@ class qtype_algebra_parser_number extends qtype_algebra_parser_term {
  * rendering the term in LaTeX. Other variables display their first letter with all
  * subsequent letters being lowercase. This reduces confusion when rendering expressions
  * consisting of multiplication of two variables.
+ *
+ * @package     qtype_algebra
+ * @author      Roger Moore <rwmoore 'at' ualberta.ca>
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class qtype_algebra_parser_variable extends qtype_algebra_parser_term {
     // Define the list of variable names which will be replaced by greek letters.
+    /** @var array */
     public static $greek = array (
         'alpha',
         'beta',
@@ -636,7 +689,7 @@ class qtype_algebra_parser_variable extends qtype_algebra_parser_term {
      * subscript. Failing that either the subscript must be explicitly specified using an
      * underscore character or the first character is taken as the base.
      *
-     * @param $text text matching the variable name
+     * @param string $text text matching the variable name
      */
     public function __construct($text) {
         // Create the array to store the regular expression matches in.
@@ -682,6 +735,8 @@ class qtype_algebra_parser_variable extends qtype_algebra_parser_term {
      * This method will convert the number into a nagetive one. It is called when
      * the parser finds a subtraction operator in front of the number which does
      * not have a variable or another number preceding it.
+     *
+     * @return void
      */
     public function set_negative() {
         // Set the sign to be a '-'.
@@ -694,7 +749,7 @@ class qtype_algebra_parser_variable extends qtype_algebra_parser_term {
      * The string of the variable depends solely on the name and subscript and hence these
      * are the only two arguments returned in the array.
      *
-     * @param $method name of method to call to convert arguments into strings
+     * @param object $method name of method to call to convert arguments into strings
      * @return array of the arguments that, with a format string, can be passed to sprintf
      */
     public function print_args($method) {
@@ -707,8 +762,8 @@ class qtype_algebra_parser_variable extends qtype_algebra_parser_term {
      * Overrides the base class method to simply return the numerical value of the number the
      * class represents.
      *
-     * @param $params array of values keyed by variable name
-     * @return the numerical value of the term given the provided values for the variables
+     * @param array $params array of values keyed by variable name
+     * @return numeric the numerical value of the term given the provided values for the variables
      */
     public function evaluate($params) {
         if ($this->_sign == '-') {
@@ -730,20 +785,22 @@ class qtype_algebra_parser_variable extends qtype_algebra_parser_term {
      * This is a two step process. First we use the base class equals method to ensure
      * that we are comparing two variables. Then we check that the two are the same variable.
      *
-     * @param $expr the term to compare to the current one
-     * @return true if the terms match, false otherwise
+     * @param object $expr the term to compare to the current one
+     * @return bool true if the terms match, false otherwise
      */
     public function equals($expr) {
         // Call the default method first to check type.
         if (parent::equals($expr)) {
-            return $this->_value == $expr->_value and $this->_sign == $expr->_sign;
+            return $this->_value == $expr->_value && $this->_sign == $expr->_sign;
         } else {
             return false;
         }
     }
 
     // Static class properties.
+    /** Number of arguments */
     const NARGS = 0;
+    /** @var array */
     private static $formats = array(
         'greek' => array('str' => '%s%s%s',
                           'tex' => '%s\%s_{%s}'),
@@ -759,6 +816,10 @@ class qtype_algebra_parser_variable extends qtype_algebra_parser_term {
  * The parser creates an instance of this term when it finds a string matching the power
  * operator's syntax. The string which corresponds to the term is passed to the constructor
  * of this subclass.
+ *
+ * @package     qtype_algebra
+ * @author      Roger Moore <rwmoore 'at' ualberta.ca>
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class qtype_algebra_parser_power extends qtype_algebra_parser_term {
 
@@ -769,7 +830,7 @@ class qtype_algebra_parser_power extends qtype_algebra_parser_term {
      * matches the power operator expression. Since this is simply the character representing
      * the operator it is not used except when producing a string representation of the term.
      *
-     * @param $text string matching the term's regular expression
+     * @param string $text string matching the term's regular expression
      */
     public function __construct($text) {
         parent::__construct(self::NARGS, self::$formats, $text);
@@ -782,8 +843,8 @@ class qtype_algebra_parser_power extends qtype_algebra_parser_term {
      * operation. The method evaluates the two arguments of the term and then passes them to
      * the 'pow' function from the maths library.
      *
-     * @param $params array of values keyed by variable name
-     * @return the numerical value of the term given the provided values for the variables
+     * @param array $params array of values keyed by variable name
+     * @return numeric the numerical value of the term given the provided values for the variables
      */
     public function evaluate($params) {
         $this->check_arguments();
@@ -792,7 +853,9 @@ class qtype_algebra_parser_power extends qtype_algebra_parser_term {
     }
 
     // Static class properties.
+    /** Number of arguments */
     const NARGS = 2;
+    /** @var array */
     private static $formats = array(
         'str' => '%s^%s',
         'tex' => '%s^{%s}'
@@ -806,6 +869,10 @@ class qtype_algebra_parser_power extends qtype_algebra_parser_term {
  * The parser creates an instance of this term when it finds a string matching the divide
  * operator's syntax. The string which corresponds to the term is passed to the constructor
  * of this subclass.
+ *
+ * @package     qtype_algebra
+ * @author      Roger Moore <rwmoore 'at' ualberta.ca>
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class qtype_algebra_parser_divide extends qtype_algebra_parser_term {
 
@@ -816,7 +883,7 @@ class qtype_algebra_parser_divide extends qtype_algebra_parser_term {
      * matches the divide operator expression. Since this is simply the character representing
      * the operator it is not used except when producing a string representation of the term.
      *
-     * @param $text string matching the term's regular expression
+     * @param string $text string matching the term's regular expression
      */
     public function __construct($text) {
         parent::__construct(self::NARGS, self::$formats, $text);
@@ -829,8 +896,8 @@ class qtype_algebra_parser_divide extends qtype_algebra_parser_term {
      * operation. The method evaluates the two arguments of the term and then simply divides
      * them to get the return value.
      *
-     * @param $params array of values keyed by variable name
-     * @return the numerical value of the term given the provided values for the variables
+     * @param array $params array of values keyed by variable name
+     * @return numeric the numerical value of the term given the provided values for the variables
      */
     public function evaluate($params) {
         $this->check_arguments();
@@ -847,7 +914,9 @@ class qtype_algebra_parser_divide extends qtype_algebra_parser_term {
     }
 
     // Static class properties.
+    /** Number of arguments */
     const NARGS = 2;
+    /** @var array */
     private static $formats = array(
         'str' => '%s/%s',
         'tex' => '\\frac{%s}{%s}'
@@ -861,6 +930,10 @@ class qtype_algebra_parser_divide extends qtype_algebra_parser_term {
  * The parser creates an instance of this term when it finds a string matching the multiplication
  * operator's syntax. The string which corresponds to the term is passed to the constructor
  * of this subclass.
+ *
+ * @package     qtype_algebra
+ * @author      Roger Moore <rwmoore 'at' ualberta.ca>
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class qtype_algebra_parser_multiply extends qtype_algebra_parser_term {
 
@@ -871,7 +944,7 @@ class qtype_algebra_parser_multiply extends qtype_algebra_parser_term {
      * matches the multiplication operator expression. Since this is simply the character representing
      * the operator it is not used except when producing a string representation of the term.
      *
-     * @param $text string matching the term's regular expression
+     * @param string $text string matching the term's regular expression
      */
     public function __construct($text) {
         $this->mformats = array('*' => array('str' => '%s*%s',
@@ -888,7 +961,7 @@ class qtype_algebra_parser_multiply extends qtype_algebra_parser_term {
      *
      * This method sets the term's arguments to those in the given array.
      *
-     * @param $args array to set the arguments of the term to
+     * @param array $args array to set the arguments of the term to
      */
     public function set_arguments($args) {
         // First perform default argument setting method. This will generate
@@ -899,11 +972,11 @@ class qtype_algebra_parser_multiply extends qtype_algebra_parser_term {
         // Only allow the implicit multiplication if the second argument is either a
         // special, variable, function or bracket and not negative. In all other cases the operator must be
         // explicitly written.
-        if (is_a($args[1], 'qtype_algebra_parser_bracket') or
-           is_a($args[1], 'qtype_algebra_parser_variable') or
-           is_a($args[1], 'qtype_algebra_parser_special') or
+        if (is_a($args[1], 'qtype_algebra_parser_bracket') ||
+           is_a($args[1], 'qtype_algebra_parser_variable') ||
+           is_a($args[1], 'qtype_algebra_parser_special') ||
            is_a($args[1], 'qtype_algebra_parser_function')) {
-            if (!method_exists($args[1], 'set_negative') or $args[1]->_sign == '') {
+            if (!method_exists($args[1], 'set_negative') || $args[1]->_sign == '') {
                 $this->_formats = $this->mformats['.'];
             }
         }
@@ -916,11 +989,11 @@ class qtype_algebra_parser_multiply extends qtype_algebra_parser_term {
             $powargs = $args[1]->arguments();
             // Allow the implicit multiplication if the power's first argument is either a
             // special, variable, function or bracket and not negative.
-            if (is_a($powargs[0], 'qtype_algebra_parser_bracket') or
-               is_a($powargs[0], 'qtype_algebra_parser_variable') or
-               is_a($powargs[0], 'qtype_algebra_parser_special') or
+            if (is_a($powargs[0], 'qtype_algebra_parser_bracket') ||
+               is_a($powargs[0], 'qtype_algebra_parser_variable') ||
+               is_a($powargs[0], 'qtype_algebra_parser_special') ||
                is_a($powargs[0], 'qtype_algebra_parser_function')) {
-                if (!method_exists($powargs[0], 'set_negative') or $powargs[0]->_sign == '') {
+                if (!method_exists($powargs[0], 'set_negative') || $powargs[0]->_sign == '') {
                     $this->_formats = $this->mformats['.'];
                 }
             }
@@ -934,8 +1007,8 @@ class qtype_algebra_parser_multiply extends qtype_algebra_parser_term {
      * operation. The method evaluates the two arguments of the term and then simply multiplies
      * them to get the return value.
      *
-     * @param $params array of values keyed by variable name
-     * @return the numerical value of the term given the provided values for the variables
+     * @param array $params array of values keyed by variable name
+     * @return numeric the numerical value of the term given the provided values for the variables
      */
     public function evaluate($params) {
         $this->check_arguments();
@@ -943,6 +1016,7 @@ class qtype_algebra_parser_multiply extends qtype_algebra_parser_term {
     }
 
     // Static class properties.
+    /** Number of arguments */
     const NARGS = 2;
 }
 
@@ -953,6 +1027,10 @@ class qtype_algebra_parser_multiply extends qtype_algebra_parser_term {
  * The parser creates an instance of this term when it finds a string matching the addition
  * operator's syntax. The string which corresponds to the term is passed to the constructor
  * of this subclass.
+ *
+ * @package     qtype_algebra
+ * @author      Roger Moore <rwmoore 'at' ualberta.ca>
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class qtype_algebra_parser_add extends qtype_algebra_parser_term {
 
@@ -963,7 +1041,7 @@ class qtype_algebra_parser_add extends qtype_algebra_parser_term {
      * matches the addition operator expression. Since this is simply the character representing
      * the operator it is not used except when producing a string representation of the term.
      *
-     * @param $text string matching the term's regular expression
+     * @param string $text string matching the term's regular expression
      */
     public function __construct($text) {
         parent::__construct(self::NARGS, self::$formats, $text, true);
@@ -976,8 +1054,8 @@ class qtype_algebra_parser_add extends qtype_algebra_parser_term {
      * operation. The method evaluates the two arguments of the term and then simply adds
      * them to get the return value.
      *
-     * @param $params array of values keyed by variable name
-     * @return the numerical value of the term given the provided values for the variables
+     * @param array $params array of values keyed by variable name
+     * @return numeric the numerical value of the term given the provided values for the variables
      */
     public function evaluate($params) {
         $this->check_arguments();
@@ -985,7 +1063,9 @@ class qtype_algebra_parser_add extends qtype_algebra_parser_term {
     }
 
     // Static class properties.
+    /** Number of arguments */
     const NARGS = 2;
+    /** @var array */
     private static $formats = array(
         'str' => '%s+%s',
         'tex' => '%s + %s'
@@ -999,6 +1079,10 @@ class qtype_algebra_parser_add extends qtype_algebra_parser_term {
  * The parser creates an instance of this term when it finds a string matching the subtraction
  * operator's syntax. The string which corresponds to the term is passed to the constructor
  * of this subclass.
+ *
+ * @package     qtype_algebra
+ * @author      Roger Moore <rwmoore 'at' ualberta.ca>
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class qtype_algebra_parser_subtract extends qtype_algebra_parser_term {
 
@@ -1009,7 +1093,7 @@ class qtype_algebra_parser_subtract extends qtype_algebra_parser_term {
      * matches the subtraction operator expression. Since this is simply the character representing
      * the operator it is not used except when producing a string representation of the term.
      *
-     * @param $text string matching the term's regular expression
+     * @param string $text string matching the term's regular expression
      */
     public function __construct($text) {
         parent::__construct(self::NARGS, self::$formats, $text);
@@ -1022,8 +1106,8 @@ class qtype_algebra_parser_subtract extends qtype_algebra_parser_term {
      * operation. The method evaluates the two arguments of the term and then simply subtracts
      * them to get the return value.
      *
-     * @param $params array of values keyed by variable name
-     * @return the numerical value of the term given the provided values for the variables
+     * @param array $params array of values keyed by variable name
+     * @return numeric the numerical value of the term given the provided values for the variables
      */
     public function evaluate($params) {
         $this->check_arguments();
@@ -1031,7 +1115,9 @@ class qtype_algebra_parser_subtract extends qtype_algebra_parser_term {
     }
 
     // Static class properties.
+    /** Number of arguments */
     const NARGS = 2;
+    /** @var array */
     private static $formats = array(
         'str' => '%s-%s',
         'tex' => '%s - %s'
@@ -1044,6 +1130,10 @@ class qtype_algebra_parser_subtract extends qtype_algebra_parser_term {
  *
  * The parser creates an instance of this term when it finds a string matching the a predefined
  * special constant such as pi or 'e' (from natural logarithms).
+ *
+ * @package     qtype_algebra
+ * @author      Roger Moore <rwmoore 'at' ualberta.ca>
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class qtype_algebra_parser_special extends qtype_algebra_parser_term {
 
@@ -1053,7 +1143,7 @@ class qtype_algebra_parser_special extends qtype_algebra_parser_term {
      * This function initializes an instance of a special term using the string which
      * matches the regular expression of a special constant.
      *
-     * @param $text string matching a constant's regular expression
+     * @param string $text matching a constant's regular expression
      */
     public function __construct($text) {
         parent::__construct(self::NARGS, self::$formats[$text], $text);
@@ -1078,8 +1168,8 @@ class qtype_algebra_parser_special extends qtype_algebra_parser_term {
      * Overrides the base class method to simply return the numerical value of the special
      * constant which is defined by an internal switch based on the constant's name.
      *
-     * @param $params array of values keyed by variable name
-     * @return int the numerical value of the term given the provided values for the variables
+     * @param array $params array of values keyed by variable name
+     * @return numeric the numerical value of the term given the provided values for the variables
      */
     public function evaluate($params) {
         if ($this->_sign == '-') {
@@ -1104,7 +1194,7 @@ class qtype_algebra_parser_special extends qtype_algebra_parser_term {
      * the only remaining variable is the sign of the term and this is what this method
      * returns.
      *
-     * @param $method name of method to call to convert arguments into strings
+     * @param object $method name of method to call to convert arguments into strings
      * @return array of the arguments that, with a format string, can be passed to sprintf
      */
     public function print_args($method) {
@@ -1117,20 +1207,22 @@ class qtype_algebra_parser_special extends qtype_algebra_parser_term {
      * This is a two step process. First we use the base class equals method to ensure
      * that we are comparing two variables. Then we check that the two are the same constant.
      *
-     * @param $expr the term to compare to the current one
-     * @return true if the terms match, false otherwise
+     * @param object $expr the term to compare to the current one
+     * @return bool true if the terms match, false otherwise
      */
     public function equals($expr) {
         // Call the default method first to check type.
         if (parent::equals($expr)) {
-            return $this->_value == $expr->_value and $this->_sign == $expr->_sign;
+            return $this->_value == $expr->_value && $this->_sign == $expr->_sign;
         } else {
             return false;
         }
     }
 
     // Static class properties.
+    /** Number of arguments */
     const NARGS = 0;
+    /** @var array */
     private static $formats = array(
         'pi' => array(  'str' => '%spi',
                          'tex' => '%s\\pi'),
@@ -1146,6 +1238,10 @@ class qtype_algebra_parser_special extends qtype_algebra_parser_term {
  * The parser creates an instance of this term when it finds a string matching the function's
  * syntax. The string which corresponds to the term is passed to the constructor
  * of this subclass.
+ *
+ * @package     qtype_algebra
+ * @author      Roger Moore <rwmoore 'at' ualberta.ca>
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class qtype_algebra_parser_function extends qtype_algebra_parser_term {
 
@@ -1155,10 +1251,10 @@ class qtype_algebra_parser_function extends qtype_algebra_parser_term {
      * This function initializes an instance of a function term using the string which
      * matches the name of a function.
      *
-     * @param $text string matching the function's regular expression
+     * @param string $text string matching the function's regular expression
      */
     public function __construct($text) {
-        if (!function_exists($text) and !array_key_exists($text, self::$fnmap)) {
+        if (!function_exists($text) && !array_key_exists($text, self::$fnmap)) {
             throw new parser_exception(get_string('undefinedfunction', 'qtype_algebra', $text));
         }
         $formats = array( 'str' => '%s'.$text.'%s');
@@ -1190,7 +1286,7 @@ class qtype_algebra_parser_function extends qtype_algebra_parser_term {
      * set the arguments in the given array but a second stage to insert brackets around the
      * function's argument is required.
      *
-     * @param $args array to set the arguments of the term to
+     * @param array $args array to set the arguments of the term to
      */
     public function set_arguments($args) {
         if (count($args) != $this->_nargs) {
@@ -1224,7 +1320,7 @@ class qtype_algebra_parser_function extends qtype_algebra_parser_term {
      * The string of the function depends solely on the function argument and the sign.
      * The name has already been coded in at construction time.
      *
-     * @param $method name of method to call to convert arguments into strings
+     * @param object $method name of method to call to convert arguments into strings
      * @return array of the arguments that, with a format string, can be passed to sprintf
      */
     public function print_args($method) {
@@ -1241,8 +1337,8 @@ class qtype_algebra_parser_function extends qtype_algebra_parser_term {
      * PHP math function to call. If the function is not in the map it is assumed to already be
      * the correct name for a PHP math function.
      *
-     * @param $params array of values keyed by variable name
-     * @return the numerical value of the term given the provided values for the variables
+     * @param array $params array of values keyed by variable name
+     * @return numeric the numerical value of the term given the provided values for the variables
      */
     public function evaluate($params) {
         // First ensure that there are the correct number of arguments.
@@ -1270,29 +1366,33 @@ class qtype_algebra_parser_function extends qtype_algebra_parser_term {
      * This is a two step process. First we use the base class equals method to ensure
      * that we are comparing two variables. Then we check that the two are the same constant.
      *
-     * @param $expr the term to compare to the current one
-     * @return true if the terms match, false otherwise
+     * @param object $expr the term to compare to the current one
+     * @return bool true if the terms match, false otherwise
      */
     public function equals($expr) {
         // Call the default method first to check type.
         if (parent::equals($expr)) {
-            return $this->_value == $expr->_value and $this->_sign == $expr->_sign;
+            return $this->_value == $expr->_value && $this->_sign == $expr->_sign;
         } else {
             return false;
         }
     }
 
     // Static class properties.
+    /** Number of arguments */
     const NARGS = 1;
+    /** @var array */
     public static $fnmap = array ('ln' => 'log',
                                   'log' => 'log10'
                                   );
+    /** @var array */
     public static $texmap = array('asin' => '\\sin^{-1}',
                                   'acos' => '\\cos^{-1}',
                                   'atan' => '\\tan^{-1}',
                                   'sqrt' => '\\sqrt'
                                   );
     // List of functions requiring special brackets.
+    /** @var array */
     public static $bracketmap = array ('sqrt'
                                        );
 }
@@ -1305,9 +1405,18 @@ class qtype_algebra_parser_function extends qtype_algebra_parser_term {
  * operator's syntax. The string which corresponds to the term is passed to the constructor
  * of this subclass. Note that a pair of brackets is treated as a single term. There are no
  * separate open and close bracket operators.
+ *
+ * @package     qtype_algebra
+ * @author      Roger Moore <rwmoore 'at' ualberta.ca>
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class qtype_algebra_parser_bracket extends qtype_algebra_parser_term {
 
+    /**
+     * The constructor.
+     *
+     * @param string $text
+     */
     public function __construct($text) {
         parent::__construct(self::NARGS, self::$formats[$text], $text);
         $this->_sign = '';
@@ -1337,8 +1446,8 @@ class qtype_algebra_parser_bracket extends qtype_algebra_parser_term {
      * operation. The method evaluates the argument of the term, i.e. what is inside the
      * brackets, and then returns the value.
      *
-     * @param $params array of values keyed by variable name
-     * @return the numerical value of the term given the provided values for the variables
+     * @param array $params array of values keyed by variable name
+     * @return int the numerical value of the term given the provided values for the variables
      */
     public function evaluate($params) {
         if ($this->_sign == '-') {
@@ -1352,6 +1461,11 @@ class qtype_algebra_parser_bracket extends qtype_algebra_parser_term {
         return $mult * $this->_arguments[0]->evaluate($params);
     }
 
+    /**
+     * Set negative.
+     *
+     * @return void
+     */
     public function set_negative() {
         // Set the sign to be a '-'.
         $this->_sign = '-';
@@ -1371,11 +1485,15 @@ class qtype_algebra_parser_bracket extends qtype_algebra_parser_term {
     }
 
     // Member variables.
+    /** @var string */
     public $_open = '(';
+    /** @var string */
     public $_close = ')';
 
     // Static class properties.
+    /** Number of arguments */
     const NARGS = 1;
+    /** @var array */
     private static $formats = array(
         '(' => array('str' => '(%s)',
                       'tex' => '\\left( %s \\right)'),
@@ -1396,15 +1514,21 @@ class qtype_algebra_parser_bracket extends qtype_algebra_parser_term {
  * This class implements the methods needed to parse an expression. It uses a series of
  * regular expressions to indentify the different terms in the expression and then creates
  * instances of the correct subclass to handle them.
+ *
+ * @package     qtype_algebra
+ * @author      Roger Moore <rwmoore 'at' ualberta.ca>
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class qtype_algebra_parser {
     // Special constants which the parser will understand.
+    /** @var array */
     public static $specials = array (
         'pi',
         'e'
     );
 
     // Functions which the parser will understand. These should all be standard PHP math functions.
+    /** @var array */
     public static $functions = array ('sqrt',
                                       'ln',
                                       'log',
@@ -1420,6 +1544,7 @@ class qtype_algebra_parser {
 
     // Array to define the priority of the different operations. The parser implements the standard BODMAS priority:
     // brackets, order (power), division, mulitplication, addition, subtraction.
+    /** @var array */
     private static $priority = array (
         array('qtype_algebra_parser_power'),
         array('qtype_algebra_parser_function'),
@@ -1428,14 +1553,19 @@ class qtype_algebra_parser {
     );
 
     // Regular experssion to match an open bracket.
+    /** @var string */
     private static $openb = '/[\{\(\[]/A';
     // Regular experssion to match a close bracket.
+    /** @var string */
     private static $closeb = '/[\}\)\]]/A';
     // Regular expression to match a plain float or integer number without exponent.
+    /** @var string */
     private static $plainnumber = '(([0-9]+(\.|,)[0-9]*)|([0-9]+)|((\.|,)[0-9]+))';
     // Regular expression to match a float or integer number with an exponent.
+    /** @var string */
     private static $expnumber = '(([0-9]+(\.|,)[0-9]*)|([0-9]+)|((\.|,)[0-9]+))E([-+]?\d+)';
     // Array to associate close brackets with the correct open bracket type.
+    /** @var array */
     private static $bramap = array(')' => '(', ']' => '[', '}' => '{');
 
     /**
@@ -1465,17 +1595,19 @@ class qtype_algebra_parser {
      *
      * This method loops over the string using the regular expressions in the token map to break down the
      * string into tokens. These tokens are arranged into a structured stack, taking account of the
-     * bracket structure. Finally then method calls the {@link interpret} method to convert the structured
+     * bracket structure. Finally then method calls the interpret() method to convert the structured
      * token strings into a fully parsed term structure. The method can optionally be passed a list of
      * variables which are used in the expression. If such a list is passed then the parser will attempt
      * to match the current position in the string with one of these given variables before any other
      * token. When passing a variable list a third parameter allows a choice of whether to allow additional
      * undeclared variables. This defaults to false when a list of variables is passed and is ignored otherwise.
      *
-     * @param $text string containing the expression to parse
-     * @param $variables array containing known variable names
-     * @param $undecvars whether to allow (true) undeclared variable names
+     * @param string $text string containing the expression to parse
+     * @param array $variables array containing known variable names
+     * @param bool $undecvars whether to allow (true) undeclared variable names
      * @return top term of the parsed expression
+     * @throws coding_exception
+     * @throws parser_exception
      */
     public function parse($text, $variables = array(), $undecvars = false) {
         // Create a regular expression to match the known variables if an array is specified.
@@ -1527,9 +1659,9 @@ class qtype_algebra_parser {
             // are open brackets.
             if (preg_match(self::$openb, substr($text, $i), $m)) {
                 // Check for a non-operator and if one is found assume implicit multiplication.
-                if (count($tree) > 0 and (is_array($tree[count($tree) - 1]) or
+                if (count($tree) > 0 && (is_array($tree[count($tree) - 1]) ||
                     (is_object($tree[count($tree) - 1])
-                     and $tree[count($tree) - 1]->n_args() == 0))) {
+                     && $tree[count($tree) - 1]->n_args() == 0))) {
                     // Make the implicit assumption explicit by adding an appropriate
                     // multiplication operator.
                     array_push($tree, new qtype_algebra_parser_multiply('*'));
@@ -1565,10 +1697,10 @@ class qtype_algebra_parser {
                 continue;
             }
             // If a list of predefined variables was given to the method then check for them here.
-            if (!empty($revar) and preg_match($revar, substr($text, $i), $m)) {
+            if (!empty($revar) && preg_match($revar, substr($text, $i), $m)) {
                 // Check for a zero argument term or brackets preceding the variable and if there is one then
                 // add the implicit multiplication operation.
-                if (count($tree) > 0 and (is_array($tree[count($tree) - 1]) or $tree[count($tree) - 1]->n_args() == 0)) {
+                if (count($tree) > 0 && (is_array($tree[count($tree) - 1]) || $tree[count($tree) - 1]->n_args() == 0)) {
                     array_push($tree, new qtype_algebra_parser_multiply('*'));
                 }
                 // Increment the string index by the length of the variable's name.
@@ -1583,15 +1715,15 @@ class qtype_algebra_parser {
                 if (preg_match($token[0], substr($text, $i), $m)) {
                     // Check for a variable and throw an exception if undeclared variables are
                     // not allowed and a list of defined variables was passed.
-                    if (!empty($revar) and !$undecvars and $token[1] == 'qtype_algebra_parser_variable') {
+                    if (!empty($revar) && !$undecvars && $token[1] == 'qtype_algebra_parser_variable') {
                         throw new parser_exception(get_string('undeclaredvar', 'qtype_algebra', $m[0]));
                     }
                     // Check for a zero argument term preceding a variable, function or special and then
                     // add the implicit multiplication.
-                    if (count($tree) > 0 and ($token[1] == 'qtype_algebra_parser_variable' or
-                        $token[1] == 'qtype_algebra_parser_function' or
+                    if (count($tree) > 0 && ($token[1] == 'qtype_algebra_parser_variable' ||
+                        $token[1] == 'qtype_algebra_parser_function' ||
                         $token[1] == 'qtype_algebra_parser_special')
-                        and (is_array($tree[count($tree) - 1]) or
+                        && (is_array($tree[count($tree) - 1]) ||
                         $tree[count($tree) - 1]->n_args() == 0)) {
                         array_push($tree, new qtype_algebra_parser_multiply('*'));
                     }
@@ -1613,11 +1745,11 @@ class qtype_algebra_parser {
     /**
      * Takes a structured token map and converts it into a parsed term structure.
      *
-     * This is an internal method of the parser class and is called by the {@link parse}
+     * This is an internal method of the parser class and is called by the parse()
      * method. It performs the final stage of the parsing process and returns the fully
      * parsed term structure.
      *
-     * @param $tree structured token array
+     * @param array $tree structured token array
      * @return top term of the fully parsed structure
      */
     public function interpret($tree) {
@@ -1650,17 +1782,17 @@ class qtype_algebra_parser {
         $toremove = array();
         for ($i = 0; $i < count($tree); $i++) {
             // Check that this element is an addition or subtraction operator.
-            if (is_a($tree[$i], 'qtype_algebra_parser_subtract') or is_a($tree[$i], 'qtype_algebra_parser_add')) {
+            if (is_a($tree[$i], 'qtype_algebra_parser_subtract') || is_a($tree[$i], 'qtype_algebra_parser_add')) {
                 // Check whether the precedding argument (if there is one) is a number or
                 // a variable. In either case this is a addition/subtraction operation so we continue.
-                if ($i > 0 and (is_a($tree[$i - 1], 'qtype_algebra_parser_variable') or
-                             is_a($tree[$i - 1], 'qtype_algebra_parser_number') or
+                if ($i > 0 && (is_a($tree[$i - 1], 'qtype_algebra_parser_variable') ||
+                             is_a($tree[$i - 1], 'qtype_algebra_parser_number') ||
                              is_a($tree[$i - 1], 'qtype_algebra_parser_bracket'))) {
                     continue;
                 } else {
                     // Otherwise we have found a minus sign indicating a positive or negative quantity...
                     // Check that we do have a number following otherwise generate an exception...
-                    if ($i == (count($tree) - 1) or !method_exists($tree[$i + 1], 'set_negative')) {
+                    if ($i == (count($tree) - 1) || !method_exists($tree[$i + 1], 'set_negative')) {
                         throw new parser_exception(get_string('illegalplusminus', 'qtype_algebra'));
                     }
                     // If we have a subtract operation then we need to make the following number negative.
@@ -1690,7 +1822,7 @@ class qtype_algebra_parser {
                             throw new parser_exception(get_string('missingonearg', 'qtype_algebra', $tree[$i]->_value));
                         }
                     } else if ($tree[$i]->n_args() == 2) {
-                        if ($i > 0 and $i < (count($tree) - 1)) {
+                        if ($i > 0 && $i < (count($tree) - 1)) {
                             $tree[$i]->set_arguments(array($tree[$i - 1],
                                                     $tree[$i + 1]));
                             array_splice($tree, $i + 1, 1);

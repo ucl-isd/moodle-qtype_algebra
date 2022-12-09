@@ -22,11 +22,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
-
-global $CFG;
-require_once($CFG->dirroot . '/question/engine/tests/helpers.php');
-
 /**
  * Test helper class for the algebra question type.
  *
@@ -34,6 +29,11 @@ require_once($CFG->dirroot . '/question/engine/tests/helpers.php');
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class qtype_algebra_test_helper extends question_test_helper {
+    /**
+     * Get test questions.
+     *
+     * @return string[]
+     */
     public function get_test_questions() {
         return array('simplemath', 'derive');
     }
@@ -46,8 +46,9 @@ class qtype_algebra_test_helper extends question_test_helper {
     public function make_algebra_question_simplemath() {
         question_bank::load_question_definition_classes('algebra');
         $q = new qtype_algebra_question();
-        test_question_maker::initialise_a_question($q);
+        \test_question_maker::initialise_a_question($q);
         $q->name = 'Algebra question';
+        $q->idnumber = null;
         $q->questiontext = 'P(x) = 3x and Q(x) = 4x. Calculate (P + Q)(x)';
         $q->generalfeedback = 'Generalfeedback: (P + Q)(x) = 7x.';
         $q->compareby = 'eval';
