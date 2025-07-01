@@ -28,7 +28,7 @@
  * @copyright  2017 Jean-Michel Vedrine
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class qtype_algebra_test_helper extends question_test_helper {
+class helper extends question_test_helper {
     /**
      * Get test questions.
      *
