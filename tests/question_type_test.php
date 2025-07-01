@@ -28,7 +28,7 @@ use coding_exception;
 use moodle_exception;
 use qtype_algebra;
 use qtype_algebra_edit_form;
-use qtype_algebra_test_helper;
+use helper;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -148,7 +148,7 @@ class question_type_test extends \advanced_testcase {
         $formdata->category = "{$cat->id},{$cat->contextid}";
         qtype_algebra_edit_form::mock_submit((array)$formdata);
 
-        $form = qtype_algebra_test_helper::get_question_editing_form($cat, $questiondata);
+        $form = helper::get_question_editing_form($cat, $questiondata);
 
         $this->assertTrue($form->is_validated());
 
@@ -203,7 +203,7 @@ class question_type_test extends \advanced_testcase {
         $formdata->answer[0] = '   7*x   ';
         qtype_algebra_edit_form::mock_submit((array)$formdata);
 
-        $form = qtype_algebra_test_helper::get_question_editing_form($cat, $questiondata);
+        $form = helper::get_question_editing_form($cat, $questiondata);
 
         $this->assertTrue($form->is_validated());
 
