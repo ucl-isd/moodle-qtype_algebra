@@ -1567,6 +1567,10 @@ class qtype_algebra_parser {
     // Array to associate close brackets with the correct open bracket type.
     /** @var array */
     private static $bramap = array(')' => '(', ']' => '[', '}' => '{');
+    /**
+     * @var array|array[]
+     */
+    private array $_tokens;
 
     /**
      * Constructor for the main parser class.
