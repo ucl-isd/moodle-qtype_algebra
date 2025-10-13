@@ -32,6 +32,7 @@ use qtype_algebra_parser;
 global $CFG;
 require_once($CFG->dirroot . '/question/engine/tests/helpers.php');
 require_once($CFG->dirroot . '/question/type/algebra/tests/helper.php');
+require_once($CFG->dirroot . '/question/type/algebra/parser.php');
 
 
 /**
