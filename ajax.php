@@ -27,7 +27,7 @@ define('AJAX_SCRIPT', true);
 require_once(__DIR__ . '/../../../config.php');
 require_once(__DIR__ . '/parser.php');
 
-$p = new qtype_algebra_parser;
+$p = new qtype_algebra_parser();
 
 $vars  = required_param('vars', PARAM_RAW);
 $expr  = required_param('expr', PARAM_RAW);
@@ -48,14 +48,14 @@ try {
 }
 
 $delimiters = $CFG->qtype_algebra_texdelimiters;
-switch($delimiters) {
+switch ($delimiters) {
     case 'old':
         $texexp = '$$' . $texexp . '$$';
         break;
     case 'new':
         $texexp = '\\[' . $texexp . '\\]';
         break;
-    case 'simple';
+    case 'simple':
         $texexp = '$' . $texexp . '$';
         break;
     case 'inline':

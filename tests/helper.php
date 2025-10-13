@@ -35,7 +35,7 @@ class qtype_algebra_test_helper extends question_test_helper {
      * @return string[]
      */
     public function get_test_questions() {
-        return array('simplemath', 'derive');
+        return ['simplemath', 'derive'];
     }
 
     /**
@@ -57,12 +57,12 @@ class qtype_algebra_test_helper extends question_test_helper {
         $q->disallow = '';
         $q->allowedfuncs = '';
         $q->answerprefix = '';
-        $q->answers = array(
+        $q->answers = [
             13 => new question_answer(13, '7*x', 1.0, 'This is a very good answer.', FORMAT_HTML),
-        );
-        $q->variables = array(
-            7 => new qtype_algebra_variable(7, 'x', -5, 5)
-        );
+        ];
+        $q->variables = [
+            7 => new qtype_algebra_variable(7, 'x', -5, 5),
+        ];
         $q->qtype = question_bank::get_qtype('algebra');
         return $q;
     }
@@ -87,14 +87,14 @@ class qtype_algebra_test_helper extends question_test_helper {
         $qdata->options->nchecks = '10';
         $qdata->options->tolerance = 0.001;
         $qdata->options->disallow = '';
-        $qdata->options->allowedfuncs = array();
+        $qdata->options->allowedfuncs = [];
         $qdata->options->answerprefix = '';
-        $qdata->options->answers = array(
+        $qdata->options->answers = [
             13 => new question_answer(13, '7*x', 1.0, 'This is a very good answer.', FORMAT_HTML),
-        );
-        $qdata->options->variables = array(
-            7 => new qtype_algebra_variable(7, 'x', -5, 5)
-        );
+        ];
+        $qdata->options->variables = [
+            7 => new qtype_algebra_variable(7, 'x', -5, 5),
+        ];
 
         return $qdata;
     }
@@ -108,24 +108,24 @@ class qtype_algebra_test_helper extends question_test_helper {
         $form = new stdClass();
 
         $form->name = 'Algebra question';
-        $form->questiontext = array('text' => 'P(x) = 3x and Q(x) = 4x. Calculate (P + Q)(x)',
-                'format' => FORMAT_HTML);
+        $form->questiontext = ['text' => 'P(x) = 3x and Q(x) = 4x. Calculate (P + Q)(x)',
+                'format' => FORMAT_HTML];
         $form->defaultmark = 1.0;
-        $form->generalfeedback = array('text' => 'Generalfeedback: (P + Q)(x) = 7x.', 'format' => FORMAT_HTML);
+        $form->generalfeedback = ['text' => 'Generalfeedback: (P + Q)(x) = 7x.', 'format' => FORMAT_HTML];
         $form->compareby = 'eval';
         $form->nchecks = '10';
         $form->tolerance = 0.001;
-        $form->allowedfuncs = array('all' => 1);
+        $form->allowedfuncs = ['all' => 1];
         $form->disallow = '';
         $form->answerprefix = '';
-        $form->answer = array('7*x');
-        $form->fraction = array('1.0');
-        $form->variable = array('x');
-        $form->varmin = array('-5');
-        $form->varmax = array('5');
-        $form->feedback = array(
-            array('text' => 'This is a very good answer.', 'format' => FORMAT_HTML),
-        );
+        $form->answer = ['7*x'];
+        $form->fraction = ['1.0'];
+        $form->variable = ['x'];
+        $form->varmin = ['-5'];
+        $form->varmax = ['5'];
+        $form->feedback = [
+            ['text' => 'This is a very good answer.', 'format' => FORMAT_HTML],
+        ];
         $form->penalty = 0.3333333;
 
         return $form;
@@ -148,13 +148,13 @@ class qtype_algebra_test_helper extends question_test_helper {
         $q->disallow = '';
         $q->allowedfuncs = '';
         $q->answerprefix = 'f(x) =';
-        $q->answers = array(
+        $q->answers = [
             13 => new question_answer(13, '2*x', 1.0, 'Correct.', FORMAT_HTML),
             14 => new question_answer(14, 'x', 0.2, 'It seems that you forgot something.', FORMAT_HTML),
-        );
-        $q->variables = array(
-            7 => new qtype_algebra_variable(7, 'x', -5, 5)
-        );
+        ];
+        $q->variables = [
+            7 => new qtype_algebra_variable(7, 'x', -5, 5),
+        ];
         $q->qtype = question_bank::get_qtype('algebra');
 
         return $q;
@@ -181,13 +181,13 @@ class qtype_algebra_test_helper extends question_test_helper {
         $qdata->options->disallow = '';
         $qdata->options->allowedfuncs = '';
         $qdata->options->answerprefix = 'f(x) =';
-        $qdata->options->answers = array(
+        $qdata->options->answers = [
             13 => new question_answer(13, '2*x', 1.0, 'Correct.', FORMAT_HTML),
             14 => new question_answer(14, 'x', 0.2, 'It seems that you forgot something.', FORMAT_HTML),
-        );
-        $qdata->options->variables = array(
-            7 => new qtype_algebra_variable(7, 'x', -5, 5)
-        );
+        ];
+        $qdata->options->variables = [
+            7 => new qtype_algebra_variable(7, 'x', -5, 5),
+        ];
 
         return $qdata;
     }

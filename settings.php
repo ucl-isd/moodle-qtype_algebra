@@ -26,33 +26,45 @@ defined('MOODLE_INTERNAL') || die;
 
 if ($ADMIN->fulltree) {
     // Default evaluation method.
-    $settings->add(new admin_setting_configselect('qtype_algebra_method',
-            new lang_string('defaultmethod', 'qtype_algebra'),
-            new lang_string('compareby', 'qtype_algebra'), 'eval',
-            array('eval' => new lang_string('compareeval', 'qtype_algebra'),
-                  'equiv'    => new lang_string('compareequiv', 'qtype_algebra')
-            )));
+    $settings->add(new admin_setting_configselect(
+        'qtype_algebra_method',
+        new lang_string('defaultmethod', 'qtype_algebra'),
+        new lang_string('compareby', 'qtype_algebra'),
+        'eval',
+        ['eval' => new lang_string('compareeval', 'qtype_algebra'),
+            'equiv'    => new lang_string('compareequiv', 'qtype_algebra'),
+        ]
+    ));
     // TeX expressions delimiter.
-    $settings->add(new admin_setting_configselect('qtype_algebra_texdelimiters',
-            new lang_string('texdelimiters', 'qtype_algebra'),
-            '', 'old',
-            array('old' => new lang_string('dollars', 'qtype_algebra'),
-                  'simple' => new lang_string('dollar', 'qtype_algebra'),
-                  'new' => new lang_string('brackets', 'qtype_algebra'),
-                  'inline' => new lang_string('braces', 'qtype_algebra'),
-            )));
+    $settings->add(new admin_setting_configselect(
+        'qtype_algebra_texdelimiters',
+        new lang_string('texdelimiters', 'qtype_algebra'),
+        '',
+        'old',
+        ['old' => new lang_string('dollars', 'qtype_algebra'),
+            'simple' => new lang_string('dollar', 'qtype_algebra'),
+            'new' => new lang_string('brackets', 'qtype_algebra'),
+            'inline' => new lang_string('braces', 'qtype_algebra'),
+        ]
+    ));
     // TeX operator for multiplication.
-    $settings->add(new admin_setting_configselect('qtype_algebra/multiplyoperator',
-            new lang_string('multiplyoperator', 'qtype_algebra'),
-            '', 'times',
-            array('times' => new lang_string('times', 'qtype_algebra'),
-                  'cdot' => new lang_string('cdot', 'qtype_algebra')
-            )));
+    $settings->add(new admin_setting_configselect(
+        'qtype_algebra/multiplyoperator',
+        new lang_string('multiplyoperator', 'qtype_algebra'),
+        '',
+        'times',
+        ['times' => new lang_string('times', 'qtype_algebra'),
+            'cdot' => new lang_string('cdot', 'qtype_algebra'),
+        ]
+    ));
     // Method to diplay TeX formatted answer formula.
-    $settings->add(new admin_setting_configselect('qtype_algebra/formuladisplay',
-            new lang_string('formuladisplay', 'qtype_algebra'),
-            '', 'iframe',
-            array('iframe' => new lang_string('iframe', 'qtype_algebra'),
-                  'dynamic' => new lang_string('dynamic', 'qtype_algebra')
-            )));
+    $settings->add(new admin_setting_configselect(
+        'qtype_algebra/formuladisplay',
+        new lang_string('formuladisplay', 'qtype_algebra'),
+        '',
+        'iframe',
+        ['iframe' => new lang_string('iframe', 'qtype_algebra'),
+            'dynamic' => new lang_string('dynamic', 'qtype_algebra'),
+        ]
+    ));
 }

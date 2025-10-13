@@ -32,12 +32,12 @@ require_once("$CFG->dirroot/question/type/algebra/parser.php");
 global $PAGE, $CFG;
 require_login();
 
-$p = new qtype_algebra_parser;
+$p = new qtype_algebra_parser();
 $validanswer = true;
 
 try {
     $query = urldecode($_SERVER['QUERY_STRING']);
-    $m = array();
+    $m = [];
 
     if (!preg_match('/vars=([^&]*)&expr=(.*)$/A', $query, $m)) {
         throw new Exception('Invalid query string received from http server!');
@@ -48,27 +48,26 @@ try {
     } else {
         $exp = $p->parse($m[2], $vars);
         $texexp = $exp->tex();
-        switch($CFG->qtype_algebra_texdelimiters) {
+        switch ($CFG->qtype_algebra_texdelimiters) {
             case 'old':
                 $texexp = '$$' . $texexp . '$$';
                 break;
             case 'new':
                 $texexp = '\\[' . $texexp . '\\]';
                 break;
-            case 'simple';
+            case 'simple':
                 $texexp = '$' . $texexp . '$';
                 break;
             case 'inline':
                 $texexp = '\\(' . $texexp . '\\)';
                 break;
         }
-
     }
 } catch (Exception $e) {
     $validanswer = false;
     $texexp = get_string('parseerror', 'qtype_algebra', $e->getMessage());
 }
-$formatoptions = new stdClass;
+$formatoptions = new stdClass();
 $formatoptions->para = false;
 $PAGE->set_context(context_system::instance());
 if ($validanswer) {
@@ -82,7 +81,13 @@ if ($validanswer) {
         <title>Formula</title>
         <meta http-equiv="content-type" content="text/html; charset=utf-8" />
 <?php
-
+/**
+ * Convert into LaTeX code, part 2.
+ *
+ * @package    qtype_algebra
+ * @copyright  Roger Moore <rwmoore@ualberta.ca>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 if (!empty($CFG->additionalhtmlhead) && stripos($CFG->additionalhtmlhead, 'MathJax') !== false) {
     // For website where Mathjax is enabled using additional HTML in head.
     echo $CFG->additionalhtmlhead;
@@ -95,6 +100,15 @@ if (!empty($CFG->additionalhtmlhead) && stripos($CFG->additionalhtmlhead, 'MathJ
 ?>
     </head>
     <body bgcolor="#ffffff">
-        <?php echo $text; ?>
+        <?php
+        /**
+         * Convert into LaTeX code, part 3.
+         *
+         * @package    qtype_algebra
+         * @copyright  Roger Moore <rwmoore@ualberta.ca>
+         * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+         */
+        echo $text;
+        ?>
     </body>
 </html>
