@@ -40,7 +40,7 @@ require_once($CFG->dirroot . '/question/type/algebra/tests/helper.php');
  * @copyright  2017 Jean-Michel Vedrine
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class parser_test extends \advanced_testcase {
+final class parser_test extends \advanced_testcase {
     /**
      * Test base elements of the parser
      *
@@ -48,12 +48,12 @@ class parser_test extends \advanced_testcase {
      * @return void
      * @throws parser_exception
      */
-    public function test_parser_vars_functions() {
-        $p = new qtype_algebra_parser;
+    public function test_parser_vars_functions(): void {
+        $p = new qtype_algebra_parser();
 
         $expr = $p->parse('sin(2x) + cos(3y)');
-        $this->assertEquals(array('x', 'y'), $expr->get_variables());
-        $this->assertEquals(array('sin', 'cos'),  $expr->get_functions());
+        $this->assertEquals(['x', 'y'], $expr->get_variables());
+        $this->assertEquals(['sin', 'cos'], $expr->get_functions());
         $this->assertEquals('\sin \left( 2  x_{} \right) + \cos \left( 3  y_{} \right)', $expr->tex());
     }
 
@@ -64,8 +64,8 @@ class parser_test extends \advanced_testcase {
      * @return void
      * @throws parser_exception
      */
-    public function test_parser_multiply_display() {
-        $p = new qtype_algebra_parser;
+    public function test_parser_multiply_display(): void {
+        $p = new qtype_algebra_parser();
 
         $expr = $p->parse('sin(2x) + cos(3y)');
         $this->assertEquals('\sin \left( 2  x_{} \right) + \cos \left( 3  y_{} \right)', $expr->tex());
