@@ -162,13 +162,13 @@ final class question_type_test extends \advanced_testcase {
 
         foreach ($questiondata as $property => $value) {
             if (!in_array($property, ['id', 'idnumber', 'version', 'timemodified', 'timecreated', 'options'])) {
-                $this->assertObjectHasAttribute($property, $actualquestiondata);
+                $this->assertObjectHasProperty($property, $actualquestiondata);
             }
         }
 
         foreach ($questiondata->options as $optionname => $value) {
             if (!in_array($optionname, ['answers', 'variables'])) {
-                $this->assertObjectHasAttribute($optionname, $actualquestiondata->options);
+                $this->assertObjectHasProperty($optionname, $actualquestiondata->options);
             }
         }
 
@@ -177,7 +177,7 @@ final class question_type_test extends \advanced_testcase {
             foreach ($answer as $ansproperty => $ansvalue) {
                 // This question does not use 'answerformat', will ignore it.
                 if (!in_array($ansproperty, ['id', 'question', 'answerformat'])) {
-                    $this->assertObjectHasAttribute($ansproperty, $actualanswer);
+                    $this->assertObjectHasProperty($ansproperty, $actualanswer);
                 }
             }
         }
