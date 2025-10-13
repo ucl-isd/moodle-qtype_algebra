@@ -39,7 +39,6 @@ define('SYMB_QUESTION_NUMVARS_START', 1);
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class qtype_combined_combinable_type_algebra extends qtype_combined_combinable_type_base {
-
     /**
      * @var string
      */
@@ -51,7 +50,7 @@ class qtype_combined_combinable_type_algebra extends qtype_combined_combinable_t
      * @return array
      */
     protected function extra_question_properties() {
-        return array('answerprefix' => '', 'allowedfuncs' => array('all' => 1));
+        return ['answerprefix' => '', 'allowedfuncs' => ['all' => 1]];
     }
 
     /**
@@ -60,7 +59,7 @@ class qtype_combined_combinable_type_algebra extends qtype_combined_combinable_t
      * @return array
      */
     protected function extra_answer_properties() {
-        return array('fraction' => '1', 'feedback' => array('text' => '', 'format' => FORMAT_PLAIN));
+        return ['fraction' => '1', 'feedback' => ['text' => '', 'format' => FORMAT_PLAIN]];
     }
 
     /**
@@ -69,10 +68,10 @@ class qtype_combined_combinable_type_algebra extends qtype_combined_combinable_t
      * @return null[]
      */
     public function subq_form_fragment_question_option_fields() {
-        return array('compareby' => null,
+        return ['compareby' => null,
                      'nchecks' => null,
                      'disallow' => null,
-                     'allowedfuncs' => null);
+                     'allowedfuncs' => null];
     }
 }
 
@@ -92,22 +91,25 @@ class qtype_combined_combinable_algebra extends qtype_combined_combinable_text_e
      * @return array of form fields.
      */
     protected function variable_group($mform) {
-        $grouparray = array();
+        $grouparray = [];
         $grouparray[] = $mform->createElement(
             'text',
             $this->form_field_name('variable'),
             get_string('variablename', 'qtype_algebra'),
-            array('size' => 10));
+            ['size' => 10]
+        );
         $grouparray[] = $mform->createElement(
             'text',
             $this->form_field_name('varmin'),
             get_string('varmin', 'qtype_algebra'),
-            array('size' => 10));
+            ['size' => 10]
+        );
         $grouparray[] = $mform->createElement(
             'text',
             $this->form_field_name('varmax'),
             get_string('varmax', 'qtype_algebra'),
-            array('size' => 10));
+            ['size' => 10]
+        );
 
         return $grouparray;
     }
@@ -123,17 +125,24 @@ class qtype_combined_combinable_algebra extends qtype_combined_combinable_text_e
      */
     public function add_form_fragment(moodleform $combinedform, MoodleQuickForm $mform, $repeatenabled) {
         global $CFG;
-        $mform->addElement('select', $this->form_field_name('compareby'), get_string('compareby', 'qtype_algebra'),
-                   array( "sage"  => get_string('comparesage', 'qtype_algebra'),
-                          "eval"  => get_string('compareeval', 'qtype_algebra'),
-                          "equiv" => get_string('compareequiv', 'qtype_algebra')
-                         ));
+        $mform->addElement(
+            'select',
+            $this->form_field_name('compareby'),
+            get_string('compareby', 'qtype_algebra'),
+            [
+                "sage"  => get_string('comparesage', 'qtype_algebra'),
+                "eval"  => get_string('compareeval', 'qtype_algebra'),
+                "equiv" => get_string('compareequiv', 'qtype_algebra'),
+            ]
+        );
         $mform->setDefault($this->form_field_name('compareby'), $CFG->qtype_algebra_method);
-        $chkarray = array(  '1',   '2',   '3',   '5',   '7',
-                          '10',  '20',  '30',  '50',  '70',
-                         '100', '200', '300', '500', '700', '1000');
-        $mform->addElement('select', $this->form_field_name('nchecks'), get_string('nchecks', 'qtype_algebra'),
-                            array_combine($chkarray, $chkarray));
+        $chkarray = ['1', '2', '3', '5', '7', '10', '20', '30', '50', '70', '100', '200', '300', '500', '700', '1000'];
+        $mform->addElement(
+            'select',
+            $this->form_field_name('nchecks'),
+            get_string('nchecks', 'qtype_algebra'),
+            array_combine($chkarray, $chkarray)
+        );
         $mform->setDefault($this->form_field_name('nchecks'), '10');
         $mform->addElement('text', $this->form_field_name('tolerance'), get_string('tolerance', 'qtype_algebra'));
         $mform->setType($this->form_field_name('tolerance'), PARAM_NUMBER);
@@ -143,7 +152,8 @@ class qtype_combined_combinable_algebra extends qtype_combined_combinable_text_e
             'text',
             $this->form_field_name('disallow'),
             get_string('disallow', 'qtype_algebra'),
-            array('size' => 55));
+            ['size' => 55]
+        );
         $mform->setType($this->form_field_name('disallow'), PARAM_RAW);
         if ($this->questionrec !== null) {
             $countvars = count($this->questionrec->options->variables);
@@ -153,8 +163,14 @@ class qtype_combined_combinable_algebra extends qtype_combined_combinable_text_e
             $repeatsatstart = SYMB_QUESTION_NUMVARS_START;
         }
 
-        $variablefields = array($mform->createElement('group', $this->form_field_name('variables'),
-                 get_string('variablex', 'qtype_algebra'), $this->variable_group($mform), null, false));
+        $variablefields = [$mform->createElement(
+            'group',
+            $this->form_field_name('variables'),
+            get_string('variablex', 'qtype_algebra'),
+            $this->variable_group($mform),
+            null,
+            false
+        )];
         $repeatedoptions[$this->form_field_name('variable')]['type'] = PARAM_RAW;
         $repeatedoptions[$this->form_field_name('varmin')]['type'] = PARAM_RAW;
         $repeatedoptions[$this->form_field_name('varmax')]['type'] = PARAM_RAW;
@@ -166,11 +182,14 @@ class qtype_combined_combinable_algebra extends qtype_combined_combinable_text_e
             $this->form_field_name('addvariables'),
             SYMB_QUESTION_NUMVARS_ADD,
             get_string('addmorevariableblanks', 'qtype_algebra'),
-            true);
-        $answerel = array($mform->createElement('text',
-                                                $this->form_field_name('answer'),
-                                                get_string('answerx', 'qtype_algebra'),
-                                                array('size' => 57, 'class' => 'tweakcss')));
+            true
+        );
+        $answerel = [$mform->createElement(
+            'text',
+            $this->form_field_name('answer'),
+            get_string('answerx', 'qtype_algebra'),
+            ['size' => 57, 'class' => 'tweakcss']
+        )];
         if ($this->questionrec !== null) {
             $countanswers = count($this->questionrec->options->answers);
         } else {
@@ -184,14 +203,16 @@ class qtype_combined_combinable_algebra extends qtype_combined_combinable_text_e
             $repeatsatstart = $countanswers;
         }
 
-        $combinedform->repeat_elements($answerel,
-                                        $repeatsatstart,
-                                        array(),
-                                        $this->form_field_name('noofchoices'),
-                                        $this->form_field_name('morechoices'),
-                                        SYMB_QUESTION_NUMANS_ADD,
-                                        get_string('addmoreanswerblanks', 'qtype_algebra'),
-                                        true);
+        $combinedform->repeat_elements(
+            $answerel,
+            $repeatsatstart,
+            [],
+            $this->form_field_name('noofchoices'),
+            $this->form_field_name('morechoices'),
+            SYMB_QUESTION_NUMANS_ADD,
+            get_string('addmoreanswerblanks', 'qtype_algebra'),
+            true
+        );
         $mform->setType($this->form_field_name('answer'), PARAM_RAW_TRIMMED);
     }
 
@@ -203,8 +224,8 @@ class qtype_combined_combinable_algebra extends qtype_combined_combinable_text_e
      * @return array|array[]
      */
     public function data_to_form($context, $fileoptions) {
-        $answers = array('answer' => array());
-        $variables = array('variable' => array(), 'varmin' => array(), 'varmax' => array());
+        $answers = ['answer' => []];
+        $variables = ['variable' => [], 'varmin' => [], 'varmax' => []];
         if ($this->questionrec !== null) {
             foreach ($this->questionrec->options->answers as $answer) {
                 $answers['answer'][] = $answer->answer;
@@ -227,15 +248,15 @@ class qtype_combined_combinable_algebra extends qtype_combined_combinable_text_e
      * @throws coding_exception
      */
     public function validate() {
-        $errors = array();
+        $errors = [];
         // Regular expression string to match a number.
-        $renumber = '/([+-]*(([0-9]+\.[0-9]*)|([0-9]+)|(\.[0-9]+))|'.
+        $renumber = '/([+-]*(([0-9]+\.[0-9]*)|([0-9]+)|(\.[0-9]+))|' .
             '(([0-9]+\.[0-9]*)|([0-9]+)|(\.[0-9]+))E([-+]?\d+))/A';
 
         // Perform sanity checks on the variables.
-        $vars = $this->formdata->variable;;
+        $vars = $this->formdata->variable;
         // Create an array of defined variables.
-        $varlist = array();
+        $varlist = [];
         foreach ($vars as $key => $var) {
             $trimvar = trim($var);
             $trimmin = trim($this->formdata->varmin[$key]);
@@ -246,11 +267,12 @@ class qtype_combined_combinable_algebra extends qtype_combined_combinable_text_e
             }
             // Check that this variable does not have the same name as a function.
             if (in_array($trimvar, qtype_algebra_parser::$functions) || in_array($trimvar, qtype_algebra_parser::$specials)) {
-                $errors[$this->form_field_name('variables['.$key.']')] = get_string('illegalvarname', 'qtype_algebra', $trimvar);
+                $errors[$this->form_field_name('variables[' . $key . ']')] =
+                    get_string('illegalvarname', 'qtype_algebra', $trimvar);
             }
             // Check that this variable has not been defined before.
             if (in_array($trimvar, $varlist)) {
-                $errors[$this->form_field_name('variables['.$key.']')] = get_string('duplicatevar', 'qtype_algebra', $trimvar);
+                $errors[$this->form_field_name('variables[' . $key . ']')] = get_string('duplicatevar', 'qtype_algebra', $trimvar);
             } else {
                 // Add the variable to the list of defined variables.
                 $varlist[] = $trimvar;
@@ -261,20 +283,20 @@ class qtype_combined_combinable_algebra extends qtype_combined_combinable_text_e
             if ($this->formdata->compareby == 'eval') {
                 // Check that a minimum has been defined.
                 if ($trimmin == '') {
-                    $errors[$this->form_field_name('variables['.$key.']')] = get_string('novarmin', 'qtype_algebra');
+                    $errors[$this->form_field_name('variables[' . $key . ']')] = get_string('novarmin', 'qtype_algebra');
                 } else if (!preg_match($renumber, $trimmin)) {
                     // If there is one check that it's a number.
-                    $errors[$this->form_field_name('variables['.$key.']')] = get_string('notanumber', 'qtype_algebra');
+                    $errors[$this->form_field_name('variables[' . $key . ']')] = get_string('notanumber', 'qtype_algebra');
                 }
                 if ($trimmax == '') {
-                    $errors[$this->form_field_name('variables['.$key.']')] = get_string('novarmax', 'qtype_algebra');
+                    $errors[$this->form_field_name('variables[' . $key . ']')] = get_string('novarmax', 'qtype_algebra');
                 } else if (!preg_match($renumber, $trimmax)) {
                     // If there is one check that it is a number.
-                    $errors[$this->form_field_name('variables['.$key.']')] = get_string('notanumber', 'qtype_algebra');
+                    $errors[$this->form_field_name('variables[' . $key . ']')] = get_string('notanumber', 'qtype_algebra');
                 }
                 // Check that the minimum is less that the maximum!
                 if ((float)$trimmin > (float)$trimmax) {
-                    $errors[$this->form_field_name('variables['.$key.']')] = get_string('varmingtmax', 'qtype_algebra');
+                    $errors[$this->form_field_name('variables[' . $key . ']')] = get_string('varmingtmax', 'qtype_algebra');
                 }
             } // End check for eval type.
         }     // End loop over variables.
@@ -285,14 +307,14 @@ class qtype_combined_combinable_algebra extends qtype_combined_combinable_text_e
 
         // Now perform the sanity checks on the answers.
         // Create a parser which we will use to check that the answers are understandable.
-        $p = new qtype_algebra_parser;
+        $p = new qtype_algebra_parser();
         $answers = $this->formdata->answer;
         $answercount = 0;
         $maxgrade = false;
         // Create an empty array to store the used variables.
-        $ansvars = array();
+        $ansvars = [];
         // Create an empty array to store the used functions.
-        $ansfuncs = array();
+        $ansfuncs = [];
         // Loop over all the answers in the form.
         foreach ($answers as $key => $answer) {
             // Try to parse the answer string using the parser. If this fails it will
@@ -310,8 +332,8 @@ class qtype_combined_combinable_algebra extends qtype_combined_combinable_text_e
                 // Do this by looking for a non-empty array to be returned from the array_diff
                 // between the list of all declared variables and the variables in this answer.
                 if ($d = array_diff($tmpvars, $varlist)) {
-                    $errors[$this->form_field_name('answer['.$key.']')] =
-                        get_string('undefinedvar', 'qtype_algebra', "'".implode("', '", $d)."'");
+                    $errors[$this->form_field_name('answer[' . $key . ']')] =
+                        get_string('undefinedvar', 'qtype_algebra', "'" . implode("', '", $d) . "'");
                 }
                 // Do the same for functions which we did for variables.
                 $ansfuncs = array_merge($ansfuncs, array_diff($expr->get_functions(), $ansfuncs));
@@ -321,7 +343,7 @@ class qtype_combined_combinable_algebra extends qtype_combined_combinable_text_e
                     $answercount++;
                 }
             } catch (Exception $e) {
-                $errors[$this->form_field_name('answer['.$key.']')] = $e->getMessage();
+                $errors[$this->form_field_name('answer[' . $key . ']')] = $e->getMessage();
                 // Return here because subsequent errors may be wrong due to not counting the answer
                 // which just failed to parse.
                 return $errors;
@@ -340,7 +362,7 @@ class qtype_combined_combinable_algebra extends qtype_combined_combinable_text_e
                 $trimvar = trim($var);
                 // If the variable is in the unused array then add the error message to that variable.
                 if (in_array($trimvar, $d)) {
-                    $errors[$this->form_field_name('variables['.$key.']')] = get_string('unusedvar', 'qtype_algebra');
+                    $errors[$this->form_field_name('variables[' . $key . ']')] = get_string('unusedvar', 'qtype_algebra');
                 }
             }
         }
