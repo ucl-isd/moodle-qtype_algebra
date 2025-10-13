@@ -32,7 +32,6 @@ namespace qtype_algebra\output;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class mobile {
-
     /**
      * Returns the algebra question type for the quiz the mobile app.
      *
@@ -44,10 +43,10 @@ class mobile {
             'templates' => [
                 [
                     'id' => 'main',
-                    'html' => file_get_contents($CFG->dirroot .'/question/type/algebra/mobile/addon-qtype-algebra.html')
-                    ]
+                    'html' => file_get_contents($CFG->dirroot . '/question/type/algebra/mobile/addon-qtype-algebra.html'),
+                    ],
             ],
-            'javascript' => file_get_contents($CFG->dirroot . '/question/type/algebra/mobile/mobile.js')
+            'javascript' => file_get_contents($CFG->dirroot . '/question/type/algebra/mobile/mobile.js'),
         ];
     }
 }

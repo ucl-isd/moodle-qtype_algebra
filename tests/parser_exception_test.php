@@ -41,7 +41,7 @@ require_once($CFG->dirroot . '/question/type/algebra/parser.php');
  * @copyright  2018 Jean-Michel Vedrine
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class parser_exception_test extends \advanced_testcase {
+final class parser_exception_test extends \advanced_testcase {
     /**
      * No close bracket.
      *
@@ -49,10 +49,10 @@ class parser_exception_test extends \advanced_testcase {
      * @return void
      * @throws parser_exception
      */
-    public function test_parser_mismatched_brackets() {
+    public function test_parser_mismatched_brackets(): void {
         $this->expectException('parser_exception');
         $this->expectExceptionMessage('Mismatched brackets: Open bracket without a close bracket found');
-        $p = new qtype_algebra_parser;
+        $p = new qtype_algebra_parser();
         $expr = $p->parse('sin(2x) + cos(');
     }
 
@@ -63,10 +63,10 @@ class parser_exception_test extends \advanced_testcase {
      * @return void
      * @throws parser_exception
      */
-    public function test_parser_wrong_arguments_number() {
+    public function test_parser_wrong_arguments_number(): void {
         $this->expectException('parser_exception');
         $this->expectExceptionMessage("Syntax Error: Operator '^' requires two arguments");
-        $p = new qtype_algebra_parser;
+        $p = new qtype_algebra_parser();
         $expr = $p->parse('x^');
     }
 
@@ -77,10 +77,10 @@ class parser_exception_test extends \advanced_testcase {
      * @return void
      * @throws parser_exception
      */
-    public function test_parser_invalid_minus() {
+    public function test_parser_invalid_minus(): void {
         $this->expectException('parser_exception');
         $this->expectExceptionMessage('Found a + or - in an invalid location');
-        $p = new qtype_algebra_parser;
+        $p = new qtype_algebra_parser();
         $expr = $p->parse('(-)');
     }
 
@@ -91,10 +91,10 @@ class parser_exception_test extends \advanced_testcase {
      * @return void
      * @throws parser_exception
      */
-    public function test_parser_wrong_arguments_number2() {
+    public function test_parser_wrong_arguments_number2(): void {
         $this->expectException('parser_exception');
         $this->expectExceptionMessage("Syntax Error: Operator '-' requires two arguments");
-        $p = new qtype_algebra_parser;
+        $p = new qtype_algebra_parser();
         $expr = $p->parse('x-');
     }
 }

@@ -50,14 +50,14 @@ class qtype_algebra_renderer extends qtype_renderer {
         $inputname = $qa->get_qt_field_name('answer');
 
         $nameprefix = str_replace(':', '_', $inputname); // Valid javascript name.
-        $inputattributes = array(
+        $inputattributes = [
             'type' => 'text',
             'name' => $inputname,
             'value' => $currentanswer,
             'id' => $inputname,
             'class' => 'algebra_answer',
             'size' => 80,
-        );
+        ];
 
         if ($options->readonly) {
             $inputattributes['readonly'] = 'readonly';
@@ -65,20 +65,20 @@ class qtype_algebra_renderer extends qtype_renderer {
 
         $feedbackimg = '';
         if ($options->correctness) {
-            $answer = $question->get_matching_answer(array('answer' => $currentanswer));
+            $answer = $question->get_matching_answer(['answer' => $currentanswer]);
             if ($answer) {
                 $fraction = $answer->fraction;
             } else {
                 $fraction = 0;
             }
-            $inputattributes['class'] = $this->feedback_class($fraction). ' algebra_answer';
+            $inputattributes['class'] = $this->feedback_class($fraction) . ' algebra_answer';
             $feedbackimg = $this->feedback_image($fraction);
         } else {
             $inputattributes['class'] = 'algebra_answer';
         }
 
         // Create an array of variable names to use when displaying the function entered.
-        $vars = array();
+        $vars = [];
         if ($question && isset($question->variables)) {
             $variables = $question->variables;
             foreach ($question->variables as $var) {
@@ -91,69 +91,87 @@ class qtype_algebra_renderer extends qtype_renderer {
 
         $input = html_writer::empty_tag('input', $inputattributes) . $feedbackimg;
 
-        $result = html_writer::tag('div', $questiontext, array('class' => 'qtext'));
+        $result = html_writer::tag('div', $questiontext, ['class' => 'qtext']);
 
-        $result .= html_writer::start_tag('div', array('class' => 'ablock'));
-        $result .= html_writer::start_tag('div', array('class' => 'prompt', 'style' => 'vertical-align: top'));
+        $result .= html_writer::start_tag('div', ['class' => 'ablock']);
+        $result .= html_writer::start_tag('div', ['class' => 'prompt', 'style' => 'vertical-align: top']);
         if (isset($question->answerprefix) && !empty($question->answerprefix)) {
-              $opts = new StdClass;
+              $opts = new StdClass();
               $opts->para = false;
-              $result .= html_writer::tag('div', format_text($question->answerprefix, FORMAT_MOODLE, $opts) . $input,
-                      array('class' => 'answer'));
+              $result .= html_writer::tag(
+                  'div',
+                  format_text($question->answerprefix, FORMAT_MOODLE, $opts) . $input,
+                  ['class' => 'answer']
+              );
         } else {
-            $result .= get_string('answer', 'qtype_algebra',
-                html_writer::tag('div', $input, array('class' => 'answer')));
+            $result .= get_string(
+                'answer',
+                'qtype_algebra',
+                html_writer::tag('div', $input, ['class' => 'answer'])
+            );
         }
         $result .= html_writer::end_tag('div');
         $result .= html_writer::end_tag('div');
         if ($qa->get_state() == question_state::$invalid) {
-            $result .= html_writer::nonempty_tag('div',
-                    $question->get_validation_error(array('answer' => $currentanswer)),
-                    array('class' => 'validationerror'));
+            $result .= html_writer::nonempty_tag(
+                'div',
+                $question->get_validation_error(['answer' => $currentanswer]),
+                ['class' => 'validationerror']
+            );
         }
         if (get_config('qtype_algebra', 'formuladisplay') == 'iframe') {
             // Javascript function which the button uses to display the rendering
             // This function sents the source of the iframe to the 'displayformula.php' script giving
             // it an argument of the formula entered by the student.
-            $iframename = $nameprefix.'_if';
+            $iframename = $nameprefix . '_if';
             // Name of the javascript function which causes the entered formula to be rendered.
-            $dfname = $nameprefix.'_display';
-            $displayfunction = 'function '.$dfname."() {\n".
-            '    var text="vars='.$varnames.'&expr="+escape(document.getElementsByName("'.$inputname.'")[0].value);'."\n".
-            "    if(text.length != 0) {\n".
-            '      document.getElementsByName("'.$iframename.'")[0].src="'.
-            $CFG->wwwroot.'/question/type/algebra/displayformula.php?"+'.
-            'text.replace(/\+/g,"%2b")'."\n".
-            "    }\n".
+            $dfname = $nameprefix . '_display';
+            $displayfunction = 'function ' . $dfname . "() {\n" .
+            '    var text="vars=' . $varnames . '&expr="+escape(document.getElementsByName("' . $inputname .
+                '")[0].value);' . "\n" . "    if(text.length != 0) {\n" .
+            '      document.getElementsByName("' . $iframename . '")[0].src="' .
+            $CFG->wwwroot . '/question/type/algebra/displayformula.php?"+' .
+            'text.replace(/\+/g,"%2b")' . "\n" .
+            "    }\n" .
             "  }\n";
-            $result .= html_writer::tag('script', $displayfunction, array('type' => 'text/javascript'));
-            $result .= html_writer::start_tag('div', array('class' => 'dispresponse'));
-            $result .= html_writer::empty_tag('input', array('type' => 'button',
-                'value' => get_string('displayresponse', 'qtype_algebra'), 'onclick' => $dfname.'()'));
-            $result .= html_writer::start_tag('iframe',
-                    array('name' => $iframename, 'width' => '60%', 'height' => 60, 'align' => 'middle', 'src' => ''));
+            $result .= html_writer::tag('script', $displayfunction, ['type' => 'text/javascript']);
+            $result .= html_writer::start_tag('div', ['class' => 'dispresponse']);
+            $result .= html_writer::empty_tag('input', ['type' => 'button',
+                'value' => get_string('displayresponse', 'qtype_algebra'), 'onclick' => $dfname . '()']);
+            $result .= html_writer::start_tag(
+                'iframe',
+                ['name' => $iframename, 'width' => '60%', 'height' => 60, 'align' => 'middle', 'src' => '']
+            );
             $result .= html_writer::end_tag('iframe');
-            $result .= html_writer::tag('script', $dfname.'();', array('type' => 'text/javascript'));
+            $result .= html_writer::tag('script', $dfname . '();', ['type' => 'text/javascript']);
             $result .= html_writer::end_tag('div');
         } else {
-            $result .= html_writer::tag('div', $varnames , array(
+            $result .= html_writer::tag('div', $varnames, [
                 'type' => 'text',
                 'name' => $nameprefix . '_vars',
                 'id' => $nameprefix . '_vars',
                 'size' => 80,
                 'style' => 'display:none',
-                )
-            );
+                ]);
 
-            $display = $question->format_text($question->formated_expression($currentanswer, $vars),
-                                    FORMAT_MOODLE , $qa, 'question', 'questiontext', $question->id);
-            $result .= html_writer::tag('div', $display , array(
-                'type' => 'text',
-                'name' => $nameprefix . '_display',
-                'id' => $nameprefix. '_display',
-                'size' => 80,
-                'class' => 'displayformula',
-                )
+            $display = $question->format_text(
+                $question->formated_expression($currentanswer, $vars),
+                FORMAT_MOODLE,
+                $qa,
+                'question',
+                'questiontext',
+                $question->id
+            );
+            $result .= html_writer::tag(
+                'div',
+                $display,
+                [
+                    'type' => 'text',
+                    'name' => $nameprefix . '_display',
+                    'id' => $nameprefix . '_display',
+                    'size' => 80,
+                    'class' => 'displayformula',
+                ]
             );
         }
         return $result;
@@ -168,13 +186,19 @@ class qtype_algebra_renderer extends qtype_renderer {
     public function specific_feedback(question_attempt $qa) {
         $question = $qa->get_question();
 
-        $answer = $question->get_matching_answer(array('answer' => $qa->get_last_qt_var('answer')));
+        $answer = $question->get_matching_answer(['answer' => $qa->get_last_qt_var('answer')]);
         if (!$answer || !$answer->feedback) {
             return '';
         }
 
-        return $question->format_text($answer->feedback, $answer->feedbackformat,
-                $qa, 'question', 'answerfeedback', $answer->id);
+        return $question->format_text(
+            $answer->feedback,
+            $answer->feedbackformat,
+            $qa,
+            'question',
+            'answerfeedback',
+            $answer->id
+        );
     }
 
     /**
@@ -191,10 +215,10 @@ class qtype_algebra_renderer extends qtype_renderer {
         if (!$answer) {
             return '';
         }
-        $formatoptions = new stdClass;
+        $formatoptions = new stdClass();
         $formatoptions->para = false;
         $formatoptions->clean = false;
         $formattedanswer = format_text($question->formated_expression($answer->answer), FORMAT_MOODLE, $formatoptions);
-        return get_string('correctansweris', 'qtype_algebra', s($answer->answer)).  $formattedanswer;
+        return get_string('correctansweris', 'qtype_algebra', s($answer->answer)) .  $formattedanswer;
     }
 }
