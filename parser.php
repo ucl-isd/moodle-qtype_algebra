@@ -94,6 +94,16 @@ class qtype_algebra_parser_term {
 
     /** @var bool */
     public $_commutes;
+    /** @var string */
+    public $_sign;
+    /** @var string */
+    public $_base;
+    /** @var string */
+    public $_exp;
+    /** @var string */
+    public $_subscript;
+    /** @var array */
+    public $mformats;
 
     /**
      * Constructor for the generic parser term.
