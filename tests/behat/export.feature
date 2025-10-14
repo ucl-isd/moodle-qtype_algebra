@@ -25,6 +25,7 @@ Feature: Test exporting Algebra questions
 
   Scenario: Export an Algebra question
     When I navigate to "Question bank" in current page administration
+    And I follow "System shared question bank"
     And I select "Export" from the "jump" singleselect
     And I set the field "id_format_xml" to "1"
     And I press "Export questions to file"

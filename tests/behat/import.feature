@@ -20,6 +20,8 @@ Feature: Test importing Algebra questions
   @javascript @_file_upload
   Scenario: import Algebra question.
     When I navigate to "Question bank" in current page administration
+    And I click on "Create default question bank" "button"
+    And I follow "Course 1 course question bank"
     And I select "Import" from the "jump" singleselect
     And I set the field "id_format_xml" to "1"
     And I upload "question/type/algebra/tests/fixtures/qtype_sample_algebra.xml" file to "Import" filemanager
