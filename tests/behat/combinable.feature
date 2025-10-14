@@ -21,6 +21,8 @@ Feature: Test algebra questions in combined question
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage
     And I navigate to "Question bank" in current page administration
+    And I click on "Create default question bank" "button"
+    And I follow "Course 1 course question bank"
     Then I press "Create a new question ..."
     And I set the field "Combined" to "1"
     And I click on "Add" "button" in the "Choose a question type to add" "dialogue"
@@ -103,6 +105,7 @@ Feature: Test algebra questions in combined question
       | Schema | Course name | Course 2 |
     Then I should see "Course 2"
     When I navigate to "Question bank" in current page administration
+    And I follow "Course 1 course question bank"
     Then I should see "Combined 001"
 
     # Edit the copy and verify the form field contents.
