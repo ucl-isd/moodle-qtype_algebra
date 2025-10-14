@@ -17,6 +17,8 @@ Feature: Test creating an Algebra question
     And I log in as "teacher1"
     And I am on "Course 1" course homepage
     And I navigate to "Question bank" in current page administration
+    And I click on "Create default question bank" "button"
+    And I follow "Course 1 course question bank"
 
   Scenario: Create an Algebra question
     When I add a "Algebra" question filling the form with:
