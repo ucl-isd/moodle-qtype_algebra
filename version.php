@@ -25,7 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'qtype_algebra';
-$plugin->version   = 2022120500;
+$plugin->version   = 2025101500;
 
 $plugin->requires  = 2022041900;
 $plugin->release   = '2.0 for Moodle 4.0+';
