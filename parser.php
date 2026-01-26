@@ -84,24 +84,24 @@ class parser_exception extends moodle_exception {
 class qtype_algebra_parser_term {
     // Member variables.
     /** @var string */
-    public $_value;             // String of the actual term itself.
+    public $value;              // String of the actual term itself.
     /** @var array */
-    public $_arguments = []; // Array of arguments in class form.
+    public $arguments = [];     // Array of arguments in class form.
     /** @var array */
-    public $_formats;           // Array of format strings.
+    public $formatarray;        // Array of format strings.
     /** @var int */
-    public $_nargs;             // Number of arguments for this term.
+    public $nargs;             // Number of arguments for this term.
 
     /** @var bool */
-    public $_commutes;
+    public $commutes;
     /** @var string */
-    public $_sign;
+    public $sign;
     /** @var string */
-    public $_base;
+    public $base;
     /** @var string */
-    public $_exp;
+    public $exp;
     /** @var string */
-    public $_subscript;
+    public $subscript;
     /** @var array */
     public $mformats;
 
@@ -119,10 +119,10 @@ class qtype_algebra_parser_term {
      * @param bool $commutes if set to true then this term commutes (only for 2 argument terms)
      */
     public function __construct($nargs, $formats, $text = '', $commutes = false) {
-        $this->_value = $text;
-        $this->_nargs = $nargs;
-        $this->_formats = $formats;
-        $this->_commutes = $commutes;
+        $this->value = $text;
+        $this->nargs = $nargs;
+        $this->formatarray = $formats;
+        $this->commutes = $commutes;
     }
 
     /**
@@ -141,10 +141,10 @@ class qtype_algebra_parser_term {
         $args = [];
         // Handle zero argument terms differently by making the
         // first 'argument' the value of the term itself.
-        if ($this->_nargs == 0) {
-            $args[] = $this->_value;
+        if ($this->nargs == 0) {
+            $args[] = $this->value;
         } else {
-            foreach ($this->_arguments as $arg) {
+            foreach ($this->arguments as $arg) {
                 $args[] = $arg->$method();
             }
         }
@@ -167,7 +167,7 @@ class qtype_algebra_parser_term {
         // Get an array of all the arguments except for the format string.
         $args = $this->print_args('str');
         // Insert the format string at the front of the argument array.
-        array_unshift($args, $this->_formats['str']);
+        array_unshift($args, $this->formatarray['str']);
         // Call sprintf using the argument array as the arguments.
         return call_user_func_array('sprintf', $args);
     }
@@ -189,7 +189,7 @@ class qtype_algebra_parser_term {
         // Get an array of all the arguments except for the format string.
         $args = $this->print_args('tex');
         // Insert the format string at the front of the argument array.
-        array_unshift($args, $this->_formats['tex']);
+        array_unshift($args, $this->formatarray['tex']);
         // Call sprintf using the argument array as the arguments.
         return call_user_func_array('sprintf', $args);
     }
@@ -213,12 +213,12 @@ class qtype_algebra_parser_term {
         // Insert the format string at the front of the argument array. First we
         // check to see if there is a format element called 'sage' if not then we
         // default to the standard string format.
-        if (array_key_exists('sage', $this->_formats)) {
+        if (array_key_exists('sage', $this->formatarray)) {
             // Insert the sage format string at the front of the argument array.
-            array_unshift($args, $this->_formats['sage']);
+            array_unshift($args, $this->formatarray['sage']);
         } else {
             // Insert the normal format string at the front of the argument array.
-            array_unshift($args, $this->_formats['str']);
+            array_unshift($args, $this->formatarray['str']);
         }
         // Call sprintf using the argument array as the arguments.
         return call_user_func_array('sprintf', $args);
@@ -234,7 +234,7 @@ class qtype_algebra_parser_term {
      * @return array of arguments for this term
      */
     public function arguments() {
-        return $this->_arguments;
+        return $this->arguments;
     }
 
     /**
@@ -252,10 +252,10 @@ class qtype_algebra_parser_term {
      * @throws parser_exception
      */
     public function set_arguments($args) {
-        if (count($args) != $this->_nargs) {
-            throw new parser_exception(get_string('nargswrong', 'qtype_algebra', $this->_value));
+        if (count($args) != $this->nargs) {
+            throw new parser_exception(get_string('nargswrong', 'qtype_algebra', $this->value));
         }
-        $this->_arguments = $args;
+        $this->arguments = $args;
     }
 
     /**
@@ -270,9 +270,9 @@ class qtype_algebra_parser_term {
      * @return bool true if the correct number of arguments are present, false otherwise
      */
     public function check_arguments($exc = true) {
-        $retval = (count($this->_arguments) == $this->_nargs);
+        $retval = (count($this->arguments) == $this->nargs);
         if ($exc && !$retval) {
-            throw new parser_exception(get_string('nargswrong', 'qtype_algebra', $this->_value));
+            throw new parser_exception(get_string('nargswrong', 'qtype_algebra', $this->value));
         } else {
             return $retval;
         }
@@ -327,10 +327,10 @@ class qtype_algebra_parser_term {
             // Add a key to the array with the value of the term, this means
             // that multiple terms with the same value will overwrite each
             // other so only one will remain.
-            $list[$this->_value] = 0;
+            $list[$this->value] = 0;
         }
         // Now loop over all the argument for this term (if any) and check them.
-        foreach ($this->_arguments as $arg) {
+        foreach ($this->arguments as $arg) {
             // Collect terms from the arguments as well.
             $arg->collect($list, $type);
         }
@@ -374,26 +374,26 @@ class qtype_algebra_parser_term {
             return false;
         }
         // Now compare the arguments recursively...
-        switch ($this->_nargs) {
+        switch ($this->nargs) {
             case 0:
                 // For zero arguments we already compared this class and found it the same so
                 // because there are no arguments to check we are equivalent!
                 return true;
             case 1:
                 // For one argument we also need to compare the argument of each term.
-                return $this->_arguments[0]->equivalent($expr->_arguments[0]);
+                return $this->arguments[0]->equivalent($expr->arguments[0]);
             case 2:
                 // Now it gets interesting. First we compare the two arguments in the same
                 // order and see what we get...
                 if (
-                    $this->_arguments[0]->equivalent($expr->_arguments[0]) &&
-                        $this->_arguments[1]->equivalent($expr->_arguments[1])
+                    $this->arguments[0]->equivalent($expr->arguments[0]) &&
+                        $this->arguments[1]->equivalent($expr->arguments[1])
                 ) {
                     // Both arguments are equivalent so we have a match.
                     return true;
                 } else if (
-                    $this->_commutes && $this->_arguments[0]->equivalent($expr->_arguments[1]) &&
-                        $this->_arguments[1]->equivalent($expr->_arguments[0])
+                    $this->commutes && $this->arguments[0]->equivalent($expr->arguments[1]) &&
+                        $this->arguments[1]->equivalent($expr->arguments[0])
                 ) {
                     // Otherwise if the operator commutes we can see if the first argument matches
                     // the second argument and vice versa.
@@ -412,7 +412,7 @@ class qtype_algebra_parser_term {
      * @return int the number of arguments required by the term
      */
     public function n_args() {
-        return $this->_nargs;
+        return $this->nargs;
     }
 
     /**
@@ -427,7 +427,7 @@ class qtype_algebra_parser_term {
      * @return numeric the numerical value of the term given the provided values for the variables
      */
     public function evaluate($params) {
-        throw new parser_exception(get_string('noevaluate', 'qtype_algebra', $this->_value));
+        throw new parser_exception(get_string('noevaluate', 'qtype_algebra', $this->value));
     }
 
     /**
@@ -443,13 +443,13 @@ class qtype_algebra_parser_term {
      * @throws parser_exception
      */
     public function dump(&$params = [], $indent = '') {
-        echo "$indent<Term type '" . get_class($this) . '\' with value \'' . $this->_value;
+        echo "$indent<Term type '" . get_class($this) . '\' with value \'' . $this->value;
         if (!empty($params)) {
             echo ' eval = \'' . $this->evaluate($params) . "'>\n";
         } else {
             echo "'>\n";
         }
-        foreach ($this->_arguments as $arg) {
+        foreach ($this->arguments as $arg) {
             $arg->dump($params, $indent . '  ');
         }
     }
@@ -554,17 +554,17 @@ class qtype_algebra_parser_number extends qtype_algebra_parser_term {
         // ',' as used in Danish, French etc. To allow for this we always convert any commas into
         // decimal points before we parse the string.
         $text = str_replace(',', '.', $text);
-        $this->_sign = '';
+        $this->sign = '';
         // Now determine whether this is in exponent form or just a plain number.
         if (preg_match('/([\.0-9]+)E([-+]?\d+)/', $text, $m)) {
-            $this->_base = $m[1];
-            $this->_exp = $m[2];
+            $this->base = $m[1];
+            $this->exp = $m[2];
             $eformats = ['str' => '%sE%s',
                             'tex' => '%s \\' . get_config('qtype_algebra', 'multiplyoperator') . '10^{%s}'];
             parent::__construct(self::NARGS, $eformats, $text);
         } else {
-            $this->_base = $text;
-            $this->_exp = '';
+            $this->base = $text;
+            $this->exp = '';
             parent::__construct(self::NARGS, self::$formats, $text);
         }
     }
@@ -580,9 +580,9 @@ class qtype_algebra_parser_number extends qtype_algebra_parser_term {
      */
     public function set_negative() {
         // Prepend a minus sign to both the base and total value strings.
-        $this->_base = '-' . $this->_base;
-        $this->_value = '-' . $this->_value;
-        $this->_sign = '-';
+        $this->base = '-' . $this->base;
+        $this->value = '-' . $this->value;
+        $this->sign = '-';
     }
 
     /**
@@ -597,7 +597,7 @@ class qtype_algebra_parser_number extends qtype_algebra_parser_term {
     public function equals($expr) {
         // Call the default method first to check type.
         if (parent::equals($expr)) {
-            return (float)$this->_value == (float)$expr->_value;
+            return (float)$this->value == (float)$expr->value;
         } else {
             return false;
         }
@@ -618,13 +618,13 @@ class qtype_algebra_parser_number extends qtype_algebra_parser_term {
         // or a comma depending on the language currently selected/ Do this by replacing the
         // decimal point (which we have to use internally because of the PHP math standard)
         // with the correct string from the language pack.
-        $base = str_replace('.', get_string('decimal', 'qtype_algebra'), $this->_base);
+        $base = str_replace('.', get_string('decimal', 'qtype_algebra'), $this->base);
         // Put the base part of the number into the argument array.
         $args = [$base];
         // Check to see if we have an exponent...
-        if ($this->_exp) {
+        if ($this->exp) {
             // We do so add it to the argument array as well.
-            $args[] = $this->_exp;
+            $args[] = $this->exp;
         }
         // Return the list of arguments.
         return $args;
@@ -639,7 +639,7 @@ class qtype_algebra_parser_number extends qtype_algebra_parser_term {
      * @param array $params array of the variable values to use
      */
     public function evaluate($params) {
-        return doubleval($this->_value);
+        return doubleval($this->value);
     }
 
     // Static class properties.
@@ -710,42 +710,42 @@ class qtype_algebra_parser_variable extends qtype_algebra_parser_term {
         // Create the array to store the regular expression matches in.
         $m = [];
         // Set the sign of the variable to be empty.
-        $this->_sign = '';
+        $this->sign = '';
         // Try to match the text to a greek letter.
         if (preg_match('/(' . implode('|', self::$greek) . ')/A', $text, $m)) {
             // Take the base name of the variable to be the greek letter.
-            $this->_base = $m[1];
+            $this->base = $m[1];
             // Extract the remaining characters for use as the subscript.
-            $this->_subscript = substr($text, strlen($m[1]));
+            $this->subscript = substr($text, strlen($m[1]));
             // If the first letter of the subscript is an underscore then remove it.
-            if (strlen($this->_subscript) != 0 && $this->_subscript[0] == '_') {
-                $this->_subscript = substr($this->_subscript, 1);
+            if (strlen($this->subscript) != 0 && $this->subscript[0] == '_') {
+                $this->subscript = substr($this->subscript, 1);
             }
             // Call the base class constructor with the variable text set to the combination of the
             // base name and the subscript without an underscore between them.
             parent::__construct(
                 self::NARGS,
                 self::$formats['greek'],
-                $this->_base . $this->_subscript
+                $this->base . $this->subscript
             );
         } else {
             // Otherwise we have a simple multi-letter variable name. Treat the fist letter as the base
             // name and the rest as the subscript.
 
             // Get the variable's base name.
-            $this->_base = substr($text, 0, 1);
+            $this->base = substr($text, 0, 1);
             // Now set the subscript to the remaining letters.
-            $this->_subscript = substr($text, 1);
+            $this->subscript = substr($text, 1);
             // If the first letter of the subscript is an underscore then remove it.
-            if (strlen($this->_subscript) != 0 && $this->_subscript[0] == '_') {
-                $this->_subscript = substr($this->_subscript, 1);
+            if (strlen($this->subscript) != 0 && $this->subscript[0] == '_') {
+                $this->subscript = substr($this->subscript, 1);
             }
             // Call the base class constructor with the variable text set to the combination of the
             // base name and the subscript without an underscore between them.
             parent::__construct(
                 self::NARGS,
                 self::$formats['std'],
-                $this->_base . $this->_subscript
+                $this->base . $this->subscript
             );
         }
     }
@@ -761,7 +761,7 @@ class qtype_algebra_parser_variable extends qtype_algebra_parser_term {
      */
     public function set_negative() {
         // Set the sign to be a '-'.
-        $this->_sign = '-';
+        $this->sign = '-';
     }
 
     /**
@@ -774,7 +774,7 @@ class qtype_algebra_parser_variable extends qtype_algebra_parser_term {
      * @return array of the arguments that, with a format string, can be passed to sprintf
      */
     public function print_args($method) {
-        return [$this->_sign, $this->_base, $this->_subscript];
+        return [$this->sign, $this->base, $this->subscript];
     }
 
     /**
@@ -787,16 +787,16 @@ class qtype_algebra_parser_variable extends qtype_algebra_parser_term {
      * @return numeric the numerical value of the term given the provided values for the variables
      */
     public function evaluate($params) {
-        if ($this->_sign == '-') {
+        if ($this->sign == '-') {
             $mult = -1;
         } else {
             $mult = 1;
         }
-        if (array_key_exists($this->_value, $params)) {
-            return $mult * doubleval($params[$this->_value]);
+        if (array_key_exists($this->value, $params)) {
+            return $mult * doubleval($params[$this->value]);
         } else {
             // Found an indefined variable. Cannot evaluate numerically so throw exception.
-            throw new parser_exception(get_string('undefinedvariable', 'qtype_algebra', $this->_value));
+            throw new parser_exception(get_string('undefinedvariable', 'qtype_algebra', $this->value));
         }
     }
 
@@ -812,7 +812,7 @@ class qtype_algebra_parser_variable extends qtype_algebra_parser_term {
     public function equals($expr) {
         // Call the default method first to check type.
         if (parent::equals($expr)) {
-            return $this->_value == $expr->_value && $this->_sign == $expr->_sign;
+            return $this->value == $expr->value && $this->sign == $expr->sign;
         } else {
             return false;
         }
@@ -869,8 +869,8 @@ class qtype_algebra_parser_power extends qtype_algebra_parser_term {
     public function evaluate($params) {
         $this->check_arguments();
         return pow(
-            doubleval($this->_arguments[0]->evaluate($params)),
-            doubleval($this->_arguments[1]->evaluate($params))
+            doubleval($this->arguments[0]->evaluate($params)),
+            doubleval($this->arguments[1]->evaluate($params))
         );
     }
 
@@ -923,14 +923,14 @@ class qtype_algebra_parser_divide extends qtype_algebra_parser_term {
     public function evaluate($params) {
         $this->check_arguments();
         // Get the value we are trying to divide by.
-        $divby = $this->_arguments[1]->evaluate($params);
+        $divby = $this->arguments[1]->evaluate($params);
         // Check to see if this is zero.
         if ($divby == 0) {
             // Check the sign of the other argument and use to determine whether we return
             // plus or minus infinity.
-            return INF * $this->_arguments[0]->evaluate($params);
+            return INF * $this->arguments[0]->evaluate($params);
         } else {
-            return $this->_arguments[0]->evaluate($params) / $divby;
+            return $this->arguments[0]->evaluate($params) / $divby;
         }
     }
 
@@ -991,7 +991,7 @@ class qtype_algebra_parser_multiply extends qtype_algebra_parser_term {
         // an error if there is a problem with the number of arguments.
         parent::set_arguments($args);
         // Set the default explicit format.
-        $this->_formats = $this->mformats['*'];
+        $this->formatarray = $this->mformats['*'];
         // Only allow the implicit multiplication if the second argument is either a
         // special, variable, function or bracket and not negative. In all other cases the operator must be
         // explicitly written.
@@ -1001,8 +1001,8 @@ class qtype_algebra_parser_multiply extends qtype_algebra_parser_term {
             is_a($args[1], 'qtype_algebra_parser_special') ||
             is_a($args[1], 'qtype_algebra_parser_function')
         ) {
-            if (!method_exists($args[1], 'set_negative') || $args[1]->_sign == '') {
-                $this->_formats = $this->mformats['.'];
+            if (!method_exists($args[1], 'set_negative') || $args[1]->sign == '') {
+                $this->formatarray = $this->mformats['.'];
             }
         }
         // Check for one more special exemption: if the second argument is a power expression
@@ -1020,8 +1020,8 @@ class qtype_algebra_parser_multiply extends qtype_algebra_parser_term {
                 is_a($powargs[0], 'qtype_algebra_parser_special') ||
                 is_a($powargs[0], 'qtype_algebra_parser_function')
             ) {
-                if (!method_exists($powargs[0], 'set_negative') || $powargs[0]->_sign == '') {
-                    $this->_formats = $this->mformats['.'];
+                if (!method_exists($powargs[0], 'set_negative') || $powargs[0]->sign == '') {
+                    $this->formatarray = $this->mformats['.'];
                 }
             }
         }
@@ -1039,7 +1039,7 @@ class qtype_algebra_parser_multiply extends qtype_algebra_parser_term {
      */
     public function evaluate($params) {
         $this->check_arguments();
-        return $this->_arguments[0]->evaluate($params) * $this->_arguments[1]->evaluate($params);
+        return $this->arguments[0]->evaluate($params) * $this->arguments[1]->evaluate($params);
     }
 
     // Static class properties.
@@ -1085,7 +1085,7 @@ class qtype_algebra_parser_add extends qtype_algebra_parser_term {
      */
     public function evaluate($params) {
         $this->check_arguments();
-        return $this->_arguments[0]->evaluate($params) + $this->_arguments[1]->evaluate($params);
+        return $this->arguments[0]->evaluate($params) + $this->arguments[1]->evaluate($params);
     }
 
     // Static class properties.
@@ -1136,7 +1136,7 @@ class qtype_algebra_parser_subtract extends qtype_algebra_parser_term {
      */
     public function evaluate($params) {
         $this->check_arguments();
-        return $this->_arguments[0]->evaluate($params) - $this->_arguments[1]->evaluate($params);
+        return $this->arguments[0]->evaluate($params) - $this->arguments[1]->evaluate($params);
     }
 
     // Static class properties.
@@ -1171,7 +1171,7 @@ class qtype_algebra_parser_special extends qtype_algebra_parser_term {
      */
     public function __construct($text) {
         parent::__construct(self::NARGS, self::$formats[$text], $text);
-        $this->_sign = '';
+        $this->sign = '';
     }
 
     /**
@@ -1183,7 +1183,7 @@ class qtype_algebra_parser_special extends qtype_algebra_parser_term {
      */
     public function set_negative() {
         // Set the sign to be a '-'.
-        $this->_sign = '-';
+        $this->sign = '-';
     }
 
     /**
@@ -1196,12 +1196,12 @@ class qtype_algebra_parser_special extends qtype_algebra_parser_term {
      * @return numeric the numerical value of the term given the provided values for the variables
      */
     public function evaluate($params) {
-        if ($this->_sign == '-') {
+        if ($this->sign == '-') {
             $mult = -1;
         } else {
             $mult = 1;
         }
-        switch ($this->_value) {
+        switch ($this->value) {
             case 'pi':
                 return $mult * pi();
             case 'e':
@@ -1222,7 +1222,7 @@ class qtype_algebra_parser_special extends qtype_algebra_parser_term {
      * @return array of the arguments that, with a format string, can be passed to sprintf
      */
     public function print_args($method) {
-        return [$this->_sign];
+        return [$this->sign];
     }
 
     /**
@@ -1237,7 +1237,7 @@ class qtype_algebra_parser_special extends qtype_algebra_parser_term {
     public function equals($expr) {
         // Call the default method first to check type.
         if (parent::equals($expr)) {
-            return $this->_value == $expr->_value && $this->_sign == $expr->_sign;
+            return $this->value == $expr->value && $this->sign == $expr->sign;
         } else {
             return false;
         }
@@ -1286,7 +1286,7 @@ class qtype_algebra_parser_function extends qtype_algebra_parser_term {
         } else {
             $formats['tex'] = '%s\\' . $text . ' %s';
         }
-        $this->_sign = '';
+        $this->sign = '';
         parent::__construct(self::NARGS, $formats, $text);
     }
 
@@ -1299,7 +1299,7 @@ class qtype_algebra_parser_function extends qtype_algebra_parser_term {
      */
     public function set_negative() {
         // Set the sign to be a '-'.
-        $this->_sign = '-';
+        $this->sign = '-';
     }
 
     /**
@@ -1312,28 +1312,28 @@ class qtype_algebra_parser_function extends qtype_algebra_parser_term {
      * @param array $args array to set the arguments of the term to
      */
     public function set_arguments($args) {
-        if (count($args) != $this->_nargs) {
-            throw new parser_exception(get_string('badfuncargs', 'qtype_algebra', $this->_value));
+        if (count($args) != $this->nargs) {
+            throw new parser_exception(get_string('badfuncargs', 'qtype_algebra', $this->value));
         }
         if (!is_a($args[0], 'qtype_algebra_parser_bracket')) {
             // Check to see if this function requires a special bracket.
-            if (in_array($this->_value, self::$bracketmap)) {
+            if (in_array($this->value, self::$bracketmap)) {
                 $b = new qtype_algebra_parser_bracket('<');
             } else {
                 // Does not require special brackets so create normal ones.
                 $b = new qtype_algebra_parser_bracket('(');
             }
             $b->set_arguments($args);
-            $this->_arguments = [$b];
+            $this->arguments = [$b];
         } else {
             // First term already a bracket.
             // Check to see if we need a special bracket.
-            if (in_array($this->_value, self::$bracketmap)) {
+            if (in_array($this->value, self::$bracketmap)) {
                 // Make the bracket special.
                 $args[0]->make_special();
             }
             // Set the arguments to the given type.
-            $this->_arguments = $args;
+            $this->arguments = $args;
         }
     }
 
@@ -1349,7 +1349,7 @@ class qtype_algebra_parser_function extends qtype_algebra_parser_term {
     public function print_args($method) {
         // First ensure that there are the correct number of arguments.
         $this->check_arguments();
-        return [$this->_sign, $this->_arguments[0]->$method()];
+        return [$this->sign, $this->arguments[0]->$method()];
     }
 
     /**
@@ -1367,19 +1367,19 @@ class qtype_algebra_parser_function extends qtype_algebra_parser_term {
         // First ensure that there are the correct number of arguments.
         $this->check_arguments();
         // Get the correct sign to multiply the value by.
-        if ($this->_sign == '-') {
+        if ($this->sign == '-') {
             $mult = -1;
         } else {
             $mult = 1;
         }
         // Check to see if there is an entry to map the function name to a PHP function.
-        if (array_key_exists($this->_value, self::$fnmap)) {
-            $func = self::$fnmap[$this->_value];
-            return $mult * $func($this->_arguments[0]->evaluate($params));
+        if (array_key_exists($this->value, self::$fnmap)) {
+            $func = self::$fnmap[$this->value];
+            return $mult * $func($this->arguments[0]->evaluate($params));
         } else {
             // No map entry so the function name must already be a PHP function...
-            $tmp = $this->_value;
-            return $mult * $tmp($this->_arguments[0]->evaluate($params));
+            $tmp = $this->value;
+            return $mult * $tmp($this->arguments[0]->evaluate($params));
         }
     }
 
@@ -1395,7 +1395,7 @@ class qtype_algebra_parser_function extends qtype_algebra_parser_term {
     public function equals($expr) {
         // Call the default method first to check type.
         if (parent::equals($expr)) {
-            return $this->_value == $expr->_value && $this->_sign == $expr->_sign;
+            return $this->value == $expr->value && $this->sign == $expr->sign;
         } else {
             return false;
         }
@@ -1441,7 +1441,7 @@ class qtype_algebra_parser_bracket extends qtype_algebra_parser_term {
      */
     public function __construct($text) {
         parent::__construct(self::NARGS, self::$formats[$text], $text);
-        $this->_sign = '';
+        $this->sign = '';
         $this->_open = $text;
         switch ($this->_open) {
             case '(':
@@ -1472,15 +1472,15 @@ class qtype_algebra_parser_bracket extends qtype_algebra_parser_term {
      * @return int the numerical value of the term given the provided values for the variables
      */
     public function evaluate($params) {
-        if ($this->_sign == '-') {
+        if ($this->sign == '-') {
             $mult = -1;
         } else {
             $mult = 1;
         }
-        if (count($this->_arguments) != $this->_nargs) {
+        if (count($this->arguments) != $this->nargs) {
             return 0;
         }
-        return $mult * $this->_arguments[0]->evaluate($params);
+        return $mult * $this->arguments[0]->evaluate($params);
     }
 
     /**
@@ -1490,7 +1490,7 @@ class qtype_algebra_parser_bracket extends qtype_algebra_parser_term {
      */
     public function set_negative() {
         // Set the sign to be a '-'.
-        $this->_sign = '-';
+        $this->sign = '-';
     }
 
     /**
@@ -1646,8 +1646,8 @@ class qtype_algebra_parser {
                 $tmpvar = new qtype_algebra_parser_variable($var);
                 // If the variable name has a subscript then create a new regular expression to
                 // search for which includes an underscore.
-                if (!empty($tmpvar->_subscript)) {
-                    $reextra[] = $tmpvar->_base . '_' . $tmpvar->_subscript;
+                if (!empty($tmpvar->subscript)) {
+                    $reextra[] = $tmpvar->base . '_' . $tmpvar->subscript;
                 }
             }
             // Merge the variable name array with the array of extra regular expressions to match.
@@ -1717,9 +1717,9 @@ class qtype_algebra_parser {
                 // Now check that the current tree started with a bracket.
                 if (!is_a($tree[0], 'qtype_algebra_parser_bracket')) {
                     throw new parser_exception(get_string('mismatchedcloseb', 'qtype_algebra'));
-                } else if ($tree[0]->_value != self::$bramap[$m[0]]) {
+                } else if ($tree[0]->value != self::$bramap[$m[0]]) {
                     // Check that the open and close bracket are of the same type.
-                    throw new parser_exception(get_string('mismatchedbracket', 'qtype_algebra', $tree[0]->_value . $m[0]));
+                    throw new parser_exception(get_string('mismatchedbracket', 'qtype_algebra', $tree[0]->value . $m[0]));
                 }
                 // Append the current tree to the tree one level up on the stack.
                 array_push($stack[count($stack) - 1], $tree);
@@ -1861,7 +1861,7 @@ class qtype_algebra_parser {
                             $i++;
                             continue;
                         } else {
-                            throw new parser_exception(get_string('missingonearg', 'qtype_algebra', $tree[$i]->_value));
+                            throw new parser_exception(get_string('missingonearg', 'qtype_algebra', $tree[$i]->value));
                         }
                     } else if ($tree[$i]->n_args() == 2) {
                         if ($i > 0 && $i < (count($tree) - 1)) {
@@ -1871,7 +1871,7 @@ class qtype_algebra_parser {
                             array_splice($tree, $i - 1, 1);
                             continue;
                         } else {
-                            throw new parser_exception(get_string('missingtwoargs', 'qtype_algebra', $tree[$i]->_value));
+                            throw new parser_exception(get_string('missingtwoargs', 'qtype_algebra', $tree[$i]->value));
                         }
                     }
                 } else {
