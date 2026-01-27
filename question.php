@@ -28,6 +28,7 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/question/type/questionbase.php');
 require_once($CFG->dirroot . '/question/type/algebra/questiontype.php');
 require_once($CFG->dirroot . '/question/type/algebra/parser.php');
+require_once($CFG->dirroot . '/question/type/algebra/variable.php');
 
 /**
  * Represents an algebra question.
@@ -366,42 +367,5 @@ class qtype_algebra_question extends question_graded_by_strategy implements ques
                 $forcedownload
             );
         }
-    }
-}
-
-/**
- * Class to represent an algebra question variable
- *
- * loaded from the qtype_algebra_variables table in the database.
- *
- * @copyright  2009 The Open University
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-class qtype_algebra_variable {
-    /** @var int the answer id. */
-    public $id;
-
-    /** @var string the name. */
-    public $name;
-
-    /** @var string minimum value. */
-    public $min = '-';
-
-    /** @var string maximum value. */
-    public $max = '-';
-
-    /**
-     * Constructor.
-     *
-     * @param int $id the variable.
-     * @param string $name the name.
-     * @param string $min the minimum value.
-     * @param string $max value.
-     */
-    public function __construct($id, $name, $min, $max) {
-        $this->id = $id;
-        $this->name = $name;
-        $this->min = $min;
-        $this->max = $max;
     }
 }

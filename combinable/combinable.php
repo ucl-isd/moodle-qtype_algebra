@@ -25,56 +25,12 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/question/type/algebra/parser.php');
+require_once($CFG->dirroot . '/question/type/algebra/combinable/combinabletype.php');
 
 define('SYMB_QUESTION_NUMANS_START', 2);
 define('SYMB_QUESTION_NUMANS_ADD', 1);
 define('SYMB_QUESTION_NUMVARS_ADD', 1);
 define('SYMB_QUESTION_NUMVARS_START', 1);
-
-/**
- * Class for combined algebra types.
- *
- * @package   qtype_algebra
- * @copyright  2019 Jean-Michel Vedrine
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-class qtype_combined_combinable_type_algebra extends qtype_combined_combinable_type_base {
-    /**
-     * @var string
-     */
-    protected $identifier = 'algebra';
-
-    /**
-     * Extra questoon properties.
-     *
-     * @return array
-     */
-    protected function extra_question_properties() {
-        return ['answerprefix' => '', 'allowedfuncs' => ['all' => 1]];
-    }
-
-    /**
-     * Extra answer properties.
-     *
-     * @return array
-     */
-    protected function extra_answer_properties() {
-        return ['fraction' => '1', 'feedback' => ['text' => '', 'format' => FORMAT_PLAIN]];
-    }
-
-    /**
-     * Subq form fragment question option fields.
-     *
-     * @return null[]
-     */
-    public function subq_form_fragment_question_option_fields() {
-        return ['compareby' => null,
-                     'nchecks' => null,
-                     'disallow' => null,
-                     'allowedfuncs' => null];
-    }
-}
-
 
 /**
  * Class for combined algebra questions.
