@@ -26,7 +26,6 @@
  * Provides the information to backup algebra questions
  */
 class backup_qtype_algebra_plugin extends backup_qtype_plugin {
-
     /**
      * Returns the qtype information to attach to question element
      */
@@ -49,12 +48,12 @@ class backup_qtype_algebra_plugin extends backup_qtype_plugin {
 
         $algebravariables = new backup_nested_element('algebra_variables');
 
-        $algebravariable = new backup_nested_element('algebra_variable', array('id'), array(
-            'name', 'min', 'max'));
+        $algebravariable = new backup_nested_element('algebra_variable', ['id'], [
+            'name', 'min', 'max']);
 
-        $algebra = new backup_nested_element('algebra', array('id'), array(
+        $algebra = new backup_nested_element('algebra', ['id'], [
             'compareby', 'nchecks', 'tolerance',
-            'disallow', 'allowedfuncs', 'answerprefix'));
+            'disallow', 'allowedfuncs', 'answerprefix']);
 
         // Now the own qtype tree.
         $pluginwrapper->add_child($algebravariables);
@@ -62,8 +61,8 @@ class backup_qtype_algebra_plugin extends backup_qtype_plugin {
         $pluginwrapper->add_child($algebra);
 
         // Set source to populate the data.
-        $algebra->set_source_table('qtype_algebra_options', array('questionid' => backup::VAR_PARENTID));
-        $algebravariable->set_source_table('qtype_algebra_variables', array('questionid' => backup::VAR_PARENTID));
+        $algebra->set_source_table('qtype_algebra_options', ['questionid' => backup::VAR_PARENTID]);
+        $algebravariable->set_source_table('qtype_algebra_variables', ['questionid' => backup::VAR_PARENTID]);
 
         // Don't need to annotate ids nor files.
 

@@ -33,7 +33,7 @@
  * @throws downgrade_exception
  * @throws upgrade_exception
  */
-function xmldb_qtype_algebra_upgrade($oldversion=0) {
+function xmldb_qtype_algebra_upgrade($oldversion = 0) {
 
     global $CFG, $THEME, $DB;
 
@@ -91,10 +91,9 @@ function xmldb_qtype_algebra_upgrade($oldversion=0) {
     }
 
     if ($oldversion < 2019042705) {
-
         // Define key question (foreign) to be dropped form qtype_algebra_variables.
         $table = new xmldb_table('qtype_algebra_variables');
-        $key = new xmldb_key('question', XMLDB_KEY_FOREIGN, array('question'), 'question', array('id'));
+        $key = new xmldb_key('question', XMLDB_KEY_FOREIGN, ['question'], 'question', ['id']);
 
         // Launch drop key question.
         $dbman->drop_key($table, $key);
@@ -104,7 +103,6 @@ function xmldb_qtype_algebra_upgrade($oldversion=0) {
     }
 
     if ($oldversion < 2019042706) {
-
         // Rename field question on table qtype_algebra_variables to questionid.
         $table = new xmldb_table('qtype_algebra_variables');
         $field = new xmldb_field('question', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0', 'id');
@@ -119,10 +117,9 @@ function xmldb_qtype_algebra_upgrade($oldversion=0) {
     }
 
     if ($oldversion < 2019042900) {
-
         // Define key questionid (foreign) to be added to qtype_algebra_variables.
         $table = new xmldb_table('qtype_algebra_variables');
-        $key = new xmldb_key('questionid', XMLDB_KEY_FOREIGN, array('questionid'), 'question', array('id'));
+        $key = new xmldb_key('questionid', XMLDB_KEY_FOREIGN, ['questionid'], 'question', ['id']);
 
         // Launch add key questionid.
         $dbman->add_key($table, $key);
@@ -133,4 +130,3 @@ function xmldb_qtype_algebra_upgrade($oldversion=0) {
 
     return true;
 }
-

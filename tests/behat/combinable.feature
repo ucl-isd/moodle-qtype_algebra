@@ -13,6 +13,8 @@ Feature: Test algebra questions in combined question
     And the following "course enrolments" exist:
       | user     | course | role           |
       | teacher1 | C1     | editingteacher |
+    And the following config values are set as admin:
+      | enableasyncbackup | 0 |
 
   @javascript
   Scenario: Create, edit and preview a combined question.
@@ -73,7 +75,7 @@ Feature: Test algebra questions in combined question
       | Marks                | Show mark and max               |
       | Specific feedback    | Shown                           |
       | Right answer         | Shown                           |
-    And I press "Start again with these options"
+    And I press "Save preview options and start again"
 
     # Attempt the question
     # Test html editor for answer field in Combined MultiResponse.
@@ -109,7 +111,7 @@ Feature: Test algebra questions in combined question
     When I click on "//a[@role='menuitem']//span[contains(.,'Edit question')]" "xpath_element"
     Then the following fields match these values:
       | Question name   | Combined 001 |
-      | Question text   | What is the square of 2xy? [[1:algebra]].<br/> What is the derivative of the function f(x) = x^2 f'(x) = [[2:algebra]]. |
+      | Question text   | <p>What is the square of 2xy? [[1:algebra]].<br>What is the derivative of the function f(x) = x^2 f'(x) = [[2:algebra]].</p> |
 
       | id_subqalgebra1defaultmark     | 50%                                     |
       | id_subqalgebra1compareby       | Evaluation                              |

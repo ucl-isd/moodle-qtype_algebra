@@ -32,13 +32,12 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class restore_qtype_algebra_plugin extends restore_qtype_plugin {
-
     /**
      * Returns the paths to be handled by the plugin at question level
      */
     protected function define_question_plugin_structure() {
 
-        $paths = array();
+        $paths = [];
 
         // This qtype uses question_answers, add them.
         $this->add_question_question_answers($paths);
@@ -77,7 +76,7 @@ class restore_qtype_algebra_plugin extends restore_qtype_plugin {
         $questiondata = parent::convert_backup_to_questiondata($backupdata);
 
         // Change structure to match get_question_options().
-        $questiondata->options->variables = $DB->get_records('qtype_algebra_variables', array('questionid' => $questiondata->id));
+        $questiondata->options->variables = $DB->get_records('qtype_algebra_variables', ['questionid' => $questiondata->id]);
 
         // Check to see if there are any allowed functions.
         if ($questiondata->options->allowedfuncs != '') {
@@ -85,7 +84,7 @@ class restore_qtype_algebra_plugin extends restore_qtype_plugin {
             $questiondata->options->allowedfuncs = explode(',', $questiondata->options->allowedfuncs);
         } else {
             // Otherwise just create an empty array.
-            $questiondata->options->allowedfuncs = array();
+            $questiondata->options->allowedfuncs = [];
         }
 
         return $questiondata;

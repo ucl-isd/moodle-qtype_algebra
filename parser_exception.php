@@ -15,18 +15,27 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * The version file for qtype_algebra
+ * Parser code for the Moodle Algebra question type Moodle algebra question type class
  *
  * @package    qtype_algebra
- * @copyright  Roger Moore <rwmoore@ualberta.ca>, Matthias Opitz / UCL <m.opitz@ucl.ac.uk>
+ * @copyright  Roger Moore <rwmoore 'at' ualberta.ca>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
-
-$plugin->component = 'qtype_algebra';
-$plugin->version   = 2026012600;
-
-$plugin->requires  = 2022041900;
-$plugin->release   = '2.0 for Moodle 4.0+';
-$plugin->maturity  = MATURITY_STABLE;
+/**
+ * Base class for all the types of exception we throw.
+ *
+ * @package     qtype_algebra
+ * @author      Roger Moore <rwmoore 'at' ualberta.ca>
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class parser_exception extends moodle_exception {
+    /**
+     * The constructor
+     *
+     * @param object $error
+     */
+    public function __construct($error) {
+        parent::__construct('exceptionmessage', 'qtype_algebra', '', $error);
+    }
+}
