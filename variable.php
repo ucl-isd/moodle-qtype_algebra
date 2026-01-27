@@ -15,33 +15,46 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Privacy main class.
+ * algebra answer question definition class.
  *
  * @package    qtype_algebra
- * @copyright  2018 Jean-Michel Vedrine
+ * @copyright  Roger Moore <rwmoore@ualberta.ca> M.Opitz <m.opitz@ucl.ac.uk>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-namespace qtype_algebra\privacy;
 
 /**
- * Privacy main class.
+ * Class to represent an algebra question variable
  *
- * @package    qtype_algebra
- * @copyright  2018 Jean-Michel Vedrine
+ * loaded from the qtype_algebra_variables table in the database.
+ *
+ * @copyright  2009 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class provider implements \core_privacy\local\metadata\null_provider {
-    // To provide php 5.6 (33_STABLE) and up support.
-    use \core_privacy\local\legacy_polyfill;
+class qtype_algebra_variable {
+    /** @var int the answer id. */
+    public $id;
+
+    /** @var string the name. */
+    public $name;
+
+    /** @var string minimum value. */
+    public $min = '-';
+
+    /** @var string maximum value. */
+    public $max = '-';
 
     /**
-     * Get the language string identifier with the component's language
-     * file to explain why this plugin stores no data.
+     * Constructor.
      *
-     * @return  string
+     * @param int $id the variable.
+     * @param string $name the name.
+     * @param string $min the minimum value.
+     * @param string $max value.
      */
-    public static function get_reason(): string {
-        return 'privacy:metadata';
+    public function __construct($id, $name, $min, $max) {
+        $this->id = $id;
+        $this->name = $name;
+        $this->min = $min;
+        $this->max = $max;
     }
 }

@@ -23,6 +23,7 @@ Feature: Test editing an Algebra question
     And I log in as "teacher1"
     And I am on "Course 1" course homepage
     And I navigate to "Question bank" in current page administration
+    And I follow "System shared question bank"
 
   @javascript @_switch_window
   Scenario: Edit an Algebra question
@@ -54,7 +55,7 @@ Feature: Test editing an Algebra question
     # Set behaviour options
     And I set the following fields to these values:
       | behaviour | immediatefeedback |
-    And I press "Start again with these options"
+    And I press "Save preview options and start again"
     And I set the field with xpath "//div[@class='answer']//input[contains(@id, '1_answer')]" to "6*x"
     And I press "Check"
     Then I should see "3x + 4x gives 7x not 6x."

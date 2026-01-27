@@ -22,18 +22,17 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class moodle1_qtype_algebra_handler extends moodle1_qtype_handler {
-
     /**
      * Get question subpaths.
      *
      * @return array
      */
     public function get_question_subpaths() {
-        return array(
+        return [
             'ANSWERS/ANSWER',
             'ALGEBRA',
-            'ALGEBRA/VARLIST/VARIABLE'
-        );
+            'ALGEBRA/VARLIST/VARIABLE',
+        ];
     }
 
     /**
@@ -54,11 +53,11 @@ class moodle1_qtype_algebra_handler extends moodle1_qtype_handler {
         if (isset($data['algebra'][0]['varlist']['variable'])) {
             $variables   = $data['algebra'][0]['varlist']['variable'];
         } else {
-            $variables   = array();
+            $variables   = [];
         }
         $this->xmlwriter->begin_tag('algebra_variables');
         foreach ($variables as $variable) {
-            $this->xmlwriter->begin_tag('algebra_variable', array('id' => $this->converter->get_nextid()));
+            $this->xmlwriter->begin_tag('algebra_variable', ['id' => $this->converter->get_nextid()]);
             $this->xmlwriter->full_tag('name', $variable['name']);
             $this->xmlwriter->full_tag('min', $variable['min']);
             $this->xmlwriter->full_tag('max', $variable['max']);
@@ -68,7 +67,7 @@ class moodle1_qtype_algebra_handler extends moodle1_qtype_handler {
 
         // And finally the algebra options.
         $options = $data['algebra'][0];
-        $this->xmlwriter->begin_tag('algebra', array('id' => $this->converter->get_nextid()));
+        $this->xmlwriter->begin_tag('algebra', ['id' => $this->converter->get_nextid()]);
         $this->xmlwriter->full_tag('compareby', $options['compareby']);
         $this->xmlwriter->full_tag('nchecks', $options['nchecks']);
         $this->xmlwriter->full_tag('tolerance', $options['tolerance']);

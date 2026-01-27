@@ -28,6 +28,7 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/question/type/questionbase.php');
 require_once($CFG->dirroot . '/question/type/algebra/questiontype.php');
 require_once($CFG->dirroot . '/question/type/algebra/parser.php');
+require_once($CFG->dirroot . '/question/type/algebra/variable.php');
 
 /**
  * Represents an algebra question.
@@ -35,13 +36,11 @@ require_once($CFG->dirroot . '/question/type/algebra/parser.php');
  * @copyright  2009 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class qtype_algebra_question extends question_graded_by_strategy
-        implements question_response_answer_comparer {
-
+class qtype_algebra_question extends question_graded_by_strategy implements question_response_answer_comparer {
     /** @var array of question_answer. */
-    public $answers = array();
+    public $answers = [];
     /** @var array of question_answer. */
-    public $variables = array();
+    public $variables = [];
     /** @var string */
     public $compareby;
     /** @var int */
@@ -68,7 +67,7 @@ class qtype_algebra_question extends question_graded_by_strategy
      * @return array
      */
     public function get_expected_data() {
-        return array('answer' => PARAM_RAW_TRIMMED);
+        return ['answer' => PARAM_RAW_TRIMMED];
     }
 
     /**
@@ -127,7 +126,7 @@ class qtype_algebra_question extends question_graded_by_strategy
         }
 
         // Create an array of variable names for the parser from the question if defined.
-        $varnames = array();
+        $varnames = [];
         if (isset($this->variables)) {
             foreach ($this->variables as $var) {
                 $varnames[] = $var->name;
@@ -135,7 +134,7 @@ class qtype_algebra_question extends question_graded_by_strategy
         }
         // We now assume that we have a string to parse. Create a parser instance to
         // to this and return the parser expression at the top of the parse tree.
-        $p = new qtype_algebra_parser;
+        $p = new qtype_algebra_parser();
         // Perform the actual parsing inside a try-catch block so that any exceptions
         // can be caught and converted into errors.
         try {
@@ -143,9 +142,9 @@ class qtype_algebra_question extends question_graded_by_strategy
         } catch (Exception $e) {
             // If the expression cannot be parsed then return a null term. This will
             // make Moodle treat the answer as wrong.
-            // TODO: Would be nice to have support for 'invalid answer' in the quiz
+            // Todo: Would be nice to have support for 'invalid answer' in the quiz
             // engine since an unparseable response is usually caused by a silly typo.
-            return new qtype_algebra_parser_nullterm;
+            return new qtype_algebra_parser_nullterm();
         }
     }
 
@@ -163,7 +162,7 @@ class qtype_algebra_question extends question_graded_by_strategy
         global $CFG;
         if ($vars == null) {
             // Create an array of variable names for the parser from the question if defined.
-            $vars = array();
+            $vars = [];
             if (isset($this->variables)) {
                 foreach ($this->variables as $var) {
                     $vars[] = $var->name;
@@ -172,7 +171,7 @@ class qtype_algebra_question extends question_graded_by_strategy
         }
         // We now assume that we have a string to parse. Create a parser instance to
         // to this and return the parser expression at the top of the parse tree.
-        $p = new qtype_algebra_parser;
+        $p = new qtype_algebra_parser();
         // Perform the actual parsing inside a try-catch block so that any exceptions
         // can be caught and converted into errors.
         try {
@@ -183,17 +182,16 @@ class qtype_algebra_question extends question_graded_by_strategy
         }
 
         $delimiters = $CFG->qtype_algebra_texdelimiters;
-        switch($delimiters) {
+        switch ($delimiters) {
             case 'old':
                 return '$$' . $texexp . '$$';
             case 'new':
                 return '\\[' . $texexp . '\\]';
-            case 'simple';
+            case 'simple':
                 return '$' . $texexp . '$';
             case 'inline':
                 return '\\(' . $texexp . '\\)';
         }
-
     }
 
     /**
@@ -281,11 +279,18 @@ class qtype_algebra_question extends question_graded_by_strategy
         // Run the evaluation loop 10 times with different random variables...
         for ($i = 0; $i < $this->nchecks; $i++) {
             // Create an array to store the values of all the variables.
-            $values = array();
+            $values = [];
             // Loop over all the variables in the question.
             foreach ($this->variables as $var) {
                 // Set the value of the variable to a random number between the min and max.
-                $values[$var->name] = $var->min + lcg_value() * abs($var->max - $var->min);
+                // Check for the PHP version as getFloat() is only available from PHP 8.3 on and
+                // lcg_value() will be deprecated from PHP 8.4 on.
+                if (PHP_VERSION_ID >= 80300) {
+                    $randomizer = new \Random\Randomizer();
+                    $values[$var->name] = $var->min + $randomizer->getFloat(0, 1) * abs($var->max - $var->min);
+                } else {
+                    $values[$var->name] = $var->min + lcg_value() * abs($var->max - $var->min);
+                }
             }
             $respvalue = $response->evaluate($values);
             $ansvalue = $answer->evaluate($values);
@@ -344,57 +349,30 @@ class qtype_algebra_question extends question_graded_by_strategy
      * @param bool $forcedownload
      * @return bool
      */
-    public function check_file_access($qa, $options, $component, $filearea,
-            $args, $forcedownload) {
+    public function check_file_access(
+        $qa,
+        $options,
+        $component,
+        $filearea,
+        $args,
+        $forcedownload
+    ) {
         if ($component == 'question' && $filearea == 'answerfeedback') {
             $currentanswer = $qa->get_last_qt_var('answer');
-            $answer = $this->get_matching_answer(array('answer' => $currentanswer));
+            $answer = $this->get_matching_answer(['answer' => $currentanswer]);
             $answerid = reset($args); // Parameter itemid is answer id.
             return $options->feedback && $answerid == $answer->id;
-
         } else if ($component == 'question' && $filearea == 'hint') {
             return $this->check_hint_file_access($qa, $options, $args);
-
         } else {
-            return parent::check_file_access($qa, $options, $component, $filearea,
-                    $args, $forcedownload);
+            return parent::check_file_access(
+                $qa,
+                $options,
+                $component,
+                $filearea,
+                $args,
+                $forcedownload
+            );
         }
-    }
-}
-
-/**
- * Class to represent an algebra question variable
- *
- * loaded from the qtype_algebra_variables table in the database.
- *
- * @copyright  2009 The Open University
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-class qtype_algebra_variable {
-    /** @var integer the answer id. */
-    public $id;
-
-    /** @var string the name. */
-    public $name;
-
-    /** @var string minimum value. */
-    public $min = '-';
-
-    /** @var string maximum value. */
-    public $max = '-';
-
-    /**
-     * Constructor.
-     *
-     * @param int $id the variable.
-     * @param string $name the name.
-     * @param string $min the minimum value.
-     * @param string $max value.
-     */
-    public function __construct($id, $name, $min, $max) {
-        $this->id = $id;
-        $this->name = $name;
-        $this->min = $min;
-        $this->max = $max;
     }
 }

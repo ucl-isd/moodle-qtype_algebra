@@ -39,7 +39,7 @@ require_once($CFG->dirroot . '/question/type/algebra/tests/helper.php');
  * @copyright  2017 Jean-Michel Vedrine
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class question_test extends \advanced_testcase {
+final class question_test extends \advanced_testcase {
     /**
      * Get test algebra question.
      *
@@ -56,14 +56,14 @@ class question_test extends \advanced_testcase {
      * @covers \qtype_algebra::is_gradable_response
      * @return void
      */
-    public function test_is_gradable_response() {
+    public function test_is_gradable_response(): void {
         $question = $this->get_test_algebra_question('simplemath');
 
-        $this->assertFalse($question->is_gradable_response(array()));
-        $this->assertFalse($question->is_gradable_response(array('answer' => '')));
-        $this->assertTrue($question->is_gradable_response(array('answer' => '0')));
-        $this->assertTrue($question->is_gradable_response(array('answer' => '0.0')));
-        $this->assertTrue($question->is_gradable_response(array('answer' => 'x')));
+        $this->assertFalse($question->is_gradable_response([]));
+        $this->assertFalse($question->is_gradable_response(['answer' => '']));
+        $this->assertTrue($question->is_gradable_response(['answer' => '0']));
+        $this->assertTrue($question->is_gradable_response(['answer' => '0.0']));
+        $this->assertTrue($question->is_gradable_response(['answer' => 'x']));
     }
 
     /**
@@ -72,17 +72,25 @@ class question_test extends \advanced_testcase {
      * @covers \qtype_algebra::grading_test0
      * @return void
      */
-    public function test_grading_test0() {
+    public function test_grading_test0(): void {
         $question = $this->get_test_algebra_question('simplemath');
 
-        $this->assertEquals(array(0, question_state::$gradedwrong),
-                $question->grade_response(array('answer' => 'x')));
-        $this->assertEquals(array(0, question_state::$gradedwrong),
-                $question->grade_response(array('answer' => '0')));
-        $this->assertEquals(array(0, question_state::$gradedwrong),
-                $question->grade_response(array('answer' => '5*x')));
-        $this->assertEquals(array(1, question_state::$gradedright),
-                $question->grade_response(array('answer' => '7*x')));
+        $this->assertEquals(
+            [0, question_state::$gradedwrong],
+            $question->grade_response(['answer' => 'x'])
+        );
+        $this->assertEquals(
+            [0, question_state::$gradedwrong],
+            $question->grade_response(['answer' => '0'])
+        );
+        $this->assertEquals(
+            [0, question_state::$gradedwrong],
+            $question->grade_response(['answer' => '5*x'])
+        );
+        $this->assertEquals(
+            [1, question_state::$gradedright],
+            $question->grade_response(['answer' => '7*x'])
+        );
     }
 
     /**
@@ -91,17 +99,25 @@ class question_test extends \advanced_testcase {
      * @covers \qtype_algebra::grading_test1
      * @return void
      */
-    public function test_grading_test1() {
+    public function test_grading_test1(): void {
         $question = $this->get_test_algebra_question('derive');
 
-        $this->assertEquals(array(0.2, question_state::$gradedpartial),
-                $question->grade_response(array('answer' => 'x')));
-        $this->assertEquals(array(0, question_state::$gradedwrong),
-                $question->grade_response(array('answer' => '0')));
-        $this->assertEquals(array(1, question_state::$gradedright),
-                $question->grade_response(array('answer' => '2*x')));
-        $this->assertEquals(array(1, question_state::$gradedright),
-                $question->grade_response(array('answer' => 'x+x')));
+        $this->assertEquals(
+            [0.2, question_state::$gradedpartial],
+            $question->grade_response(['answer' => 'x'])
+        );
+        $this->assertEquals(
+            [0, question_state::$gradedwrong],
+            $question->grade_response(['answer' => '0'])
+        );
+        $this->assertEquals(
+            [1, question_state::$gradedright],
+            $question->grade_response(['answer' => '2*x'])
+        );
+        $this->assertEquals(
+            [1, question_state::$gradedright],
+            $question->grade_response(['answer' => 'x+x'])
+        );
     }
 
     /**
@@ -110,11 +126,13 @@ class question_test extends \advanced_testcase {
      * @covers \qtype_algebra::get_correct_response
      * @return void
      */
-    public function test_get_correct_response() {
+    public function test_get_correct_response(): void {
         $question = $this->get_test_algebra_question('simplemath');
 
-        $this->assertEquals(array('answer' => '7*x'),
-                $question->get_correct_response());
+        $this->assertEquals(
+            ['answer' => '7*x'],
+            $question->get_correct_response()
+        );
     }
 
     /**
@@ -123,7 +141,7 @@ class question_test extends \advanced_testcase {
      * @covers \qtype_algebra::get_question_summary
      * @return void
      */
-    public function test_get_question_summary() {
+    public function test_get_question_summary(): void {
         $question = $this->get_test_algebra_question('derive');
         $qsummary = $question->get_question_summary();
         $this->assertEquals('What is the derivative of the function \(f(x) = x^2\) ?', $qsummary);
@@ -135,9 +153,9 @@ class question_test extends \advanced_testcase {
      * @covers \qtype_algebra::summarise_response
      * @return void
      */
-    public function test_summarise_response() {
+    public function test_summarise_response(): void {
         $question = $this->get_test_algebra_question('derive');
-        $summary = $question->summarise_response(array('answer' => '2*x'));
+        $summary = $question->summarise_response(['answer' => '2*x']);
         $this->assertEquals('2*x', $summary);
     }
 
@@ -147,19 +165,21 @@ class question_test extends \advanced_testcase {
      * @covers \qtype_algebra::classify_response
      * @return void
      */
-    public function test_classify_response() {
+    public function test_classify_response(): void {
         $question = $this->get_test_algebra_question('derive');
         $question->start_attempt(new \question_attempt_step(), 1);
 
-        $this->assertEquals(array(
-                new \question_classified_response(13, '2*x', 1.0)),
-                $question->classify_response(array('answer' => '2*x')));
-        $this->assertEquals(array(
-                new \question_classified_response(0, '5*x', 0)),
-                $question->classify_response(array('answer' => '5*x')));
-        $this->assertEquals(array(
-                \question_classified_response::no_response()),
-                $question->classify_response(array('answer' => '')));
+        $this->assertEquals(
+            [new \question_classified_response(13, '2*x', 1.0)],
+            $question->classify_response(['answer' => '2*x'])
+        );
+        $this->assertEquals(
+            [new \question_classified_response(0, '5*x', 0)],
+            $question->classify_response(['answer' => '5*x'])
+        );
+        $this->assertEquals(
+            [\question_classified_response::no_response()],
+            $question->classify_response(['answer' => ''])
+        );
     }
-
 }

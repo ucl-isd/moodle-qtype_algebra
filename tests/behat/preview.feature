@@ -23,6 +23,7 @@ Feature: Preview an Algebra question
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage
     And I navigate to "Question bank" in current page administration
+    And I follow "System shared question bank"
 
   @javascript @_switch_window
   Scenario: Preview an Algebra question with correct answer
@@ -33,7 +34,7 @@ Feature: Preview an Algebra question
     # Set behaviour options
     And I set the following fields to these values:
       | behaviour | immediatefeedback |
-    And I press "Start again with these options"
+    And I press "Save preview options and start again"
     And I set the field with xpath "//div[@class='answer']//input[contains(@id, '1_answer')]" to "7*x"
     And I press "Check"
     Then I should see "This is a very good answer."
@@ -50,7 +51,7 @@ Feature: Preview an Algebra question
     # Set behaviour options
     And I set the following fields to these values:
       | behaviour | immediatefeedback |
-    And I press "Start again with these options"
+    And I press "Save preview options and start again"
     And I set the field with xpath "//div[@class='answer']//input[contains(@id, '1_answer')]" to "6*x"
     And I press "Check"
     Then I should see "Mark 0.00 out of 1.00"

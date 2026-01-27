@@ -34,7 +34,6 @@ require_once($CFG->dirroot . '/question/type/algebra/parser.php');
  * @package qtype_algebra
  */
 class qtype_algebra extends question_type {
-
     /**
      * Defines the table which extends the question table. This allows the base questiontype
      * to automatically save, backup and restore the extra fields.
@@ -42,14 +41,14 @@ class qtype_algebra extends question_type {
      * @return an array with the table name (first) and then the column names (apart from id and questionid)
      */
     public function extra_question_fields() {
-        return array('qtype_algebra_options',
-                     'compareby',        // Name of comparison algorithm to use.
-                     'nchecks',          // Number of evaluate checks to make when comparing by evaluation.
-                     'tolerance',        // Max. fractional difference allowed for evaluation checks.
-                     'allowedfuncs',     // Comma separated list of functions allowed in responses.
-                     'disallow',         // Response which may be correct but which is not allowed.
-                     'answerprefix'      // String which is placed in front of the asnwer box.
-                     );
+        return ['qtype_algebra_options',
+            'compareby', // Name of comparison algorithm to use.
+            'nchecks', // Number of evaluate checks to make when comparing by evaluation.
+            'tolerance', // Max. fractional difference allowed for evaluation checks.
+            'allowedfuncs', // Comma separated list of functions allowed in responses.
+            'disallow', // Response which may be correct but which is not allowed.
+            'answerprefix', // String which is placed in front of the asnwer box.
+        ];
     }
 
     /**
@@ -89,8 +88,8 @@ class qtype_algebra extends question_type {
      */
     public function delete_question($questionid, $contextid) {
         global $DB;
-        $DB->delete_records('qtype_algebra_options', array('questionid' => $questionid));
-        $DB->delete_records('qtype_algebra_variables', array('questionid' => $questionid));
+        $DB->delete_records('qtype_algebra_options', ['questionid' => $questionid]);
+        $DB->delete_records('qtype_algebra_variables', ['questionid' => $questionid]);
 
         parent::delete_question($questionid, $contextid);
     }
@@ -109,8 +108,11 @@ class qtype_algebra extends question_type {
     public function save_question_variables($question) {
         global $DB;
         // Get all the old variables from the database as an array.
-        $oldvars = $DB->get_records('qtype_algebra_variables',
-                array('questionid' => $question->id), 'id ASC');
+        $oldvars = $DB->get_records(
+            'qtype_algebra_variables',
+            ['questionid' => $question->id],
+            'id ASC'
+        );
 
         // Loop over all the variables in the question form and write them to the database.
         foreach ($question->variable as $key => $varname) {
@@ -137,7 +139,7 @@ class qtype_algebra extends question_type {
 
         // Delete any left over old variables records.
         foreach ($oldvars as $oldvar) {
-            $DB->delete_records('qtype_algebra_variables', array('id' => $oldvar->id));
+            $DB->delete_records('qtype_algebra_variables', ['id' => $oldvar->id]);
         }
     }
 
@@ -174,18 +176,17 @@ class qtype_algebra extends question_type {
             // a parser string. This ensures a constant formatting is stored in the database.
             foreach ($question->answer as &$answer) {
                 $expr = $this->parse_expression($answer);
-                // TODO detect invalid answer and issue a warning.
+                // Todo: detect invalid answer and issue a warning.
                 $answer = $expr->sage();
             }
 
             // Now we need to write out all the answers to the question to the database.
             $this->save_question_answers($question);
-
         } catch (Exception $e) {
             // Error when adding answers or variables to the database so create a result class
             // and put the error string in the error member function and then return the class
             // This keeps us compatible with the existing save_question_options methods.
-            $result = new stdClass;
+            $result = new stdClass();
             $result->error = $e->getMessage();
             return $result;
         }
@@ -233,7 +234,7 @@ class qtype_algebra extends question_type {
             return false;
         }
         // Now get the variables from the database as well.
-        $question->options->variables = $DB->get_records('qtype_algebra_variables', array('questionid' => $question->id));
+        $question->options->variables = $DB->get_records('qtype_algebra_variables', ['questionid' => $question->id]);
         // Check that we have variables and if not then bail since this question type requires variables.
 
         if (count($question->options->variables) == 0) {
@@ -248,7 +249,7 @@ class qtype_algebra extends question_type {
             $question->options->allowedfuncs = explode(',', $question->options->allowedfuncs);
         } else {
             // Otherwise just create an empty array.
-            $question->options->allowedfuncs = array();
+            $question->options->allowedfuncs = [];
         }
 
         // Everything worked so return true.
@@ -280,20 +281,20 @@ class qtype_algebra extends question_type {
             // Set the question type.
             $qo->qtype = 'algebra';
 
-            $qo->compareby = $format->getpath($data, array('#', 'compareby', 0, '#'), 'eval');
-            $qo->tolerance = $format->getpath($data, array('#', 'tolerance', 0, '#'), '0');
-            $qo->nchecks   = $format->getpath($data, array('#', 'nchecks', 0, '#'), '10');
-            $qo->disallow  = $format->getpath($data, array('#', 'disallow', 0, '#', 'text', 0, '#'), '', true);
-            $allowedfuncs  = $format->getpath($data, array('#', 'allowedfuncs', 0, '#'), '');
+            $qo->compareby = $format->getpath($data, ['#', 'compareby', 0, '#'], 'eval');
+            $qo->tolerance = $format->getpath($data, ['#', 'tolerance', 0, '#'], '0');
+            $qo->nchecks   = $format->getpath($data, ['#', 'nchecks', 0, '#'], '10');
+            $qo->disallow  = $format->getpath($data, ['#', 'disallow', 0, '#', 'text', 0, '#'], '', true);
+            $allowedfuncs  = $format->getpath($data, ['#', 'allowedfuncs', 0, '#'], '');
             if ($allowedfuncs == '') {
-                $qo->allowedfuncs = array('all' => 1);
+                $qo->allowedfuncs = ['all' => 1];
             } else {
                 // Need to separate the allowed functions into an array of strings and then
                 // flip the values of this array into the keys because this is what the
                 // save options method requires.
                 $qo->allowedfuncs = array_flip(explode(',', $allowedfuncs));
             }
-            $qo->answerprefix = $format->getpath($data, array('#', 'answerprefix', 0, '#', 'text', 0, '#'), '', true);
+            $qo->answerprefix = $format->getpath($data, ['#', 'answerprefix', 0, '#', 'text', 0, '#'], '', true);
 
             // Import all the answers.
             $answers = $data['#']['answer'];
@@ -313,11 +314,21 @@ class qtype_algebra extends question_type {
             $vcount = 0;
             // Loop over each answer block found in the XML.
             foreach ($vars as $var) {
-                $qo->variable[$vcount] = $format->getpath($var, array('@', 'name'), 0);
-                $qo->varmin[$vcount]   = $format->getpath($var,
-                        array('#', 'min', 0, '#'), '0', false, get_string('novarmin', 'qtype_algebra'));
-                $qo->varmax[$vcount]   = $format->getpath($var,
-                        array('#', 'max', 0, '#'), '0', false, get_string('novarmax', 'qtype_algebra'));
+                $qo->variable[$vcount] = $format->getpath($var, ['@', 'name'], 0);
+                $qo->varmin[$vcount]   = $format->getpath(
+                    $var,
+                    ['#', 'min', 0, '#'],
+                    '0',
+                    false,
+                    get_string('novarmin', 'qtype_algebra')
+                );
+                $qo->varmax[$vcount]   = $format->getpath(
+                    $var,
+                    ['#', 'max', 0, '#'],
+                    '0',
+                    false,
+                    get_string('novarmax', 'qtype_algebra')
+                );
                 ++$vcount;
             }
 
@@ -348,9 +359,9 @@ class qtype_algebra extends question_type {
         $expout .= "    <compareby>{$question->options->compareby}</compareby>\n";
         $expout .= "    <tolerance>{$question->options->tolerance}</tolerance>\n";
         $expout .= "    <nchecks>{$question->options->nchecks}</nchecks>\n";
-        $expout .= "    <disallow>".$format->writetext($question->options->disallow, 1, true)."</disallow>\n";
+        $expout .= "    <disallow>" . $format->writetext($question->options->disallow, 1, true) . "</disallow>\n";
         $expout .= "    <allowedfuncs>$allowedfuncs</allowedfuncs>\n";
-        $expout .= "    <answerprefix>".$format->writetext($question->options->answerprefix, 1, true).
+        $expout .= "    <answerprefix>" . $format->writetext($question->options->answerprefix, 1, true) .
             "</answerprefix>\n";
         // Write out all the answers.
         $expout .= $format->write_answers($question->options->answers);
@@ -372,12 +383,12 @@ class qtype_algebra extends question_type {
      * @return stdClass
      */
     public function get_all_responses(&$question, &$state) {
-        $result = new stdClass;
-        $answers = array();
+        $result = new stdClass();
+        $answers = [];
         // Loop over all the answers.
         if (is_array($question->options->answers)) {
             foreach ($question->options->answers as $aid => $answer) {
-                $r = new stdClass;
+                $r = new stdClass();
                 $r->answer = $answer->answer;
                 $r->credit = $answer->fraction;
                 $answers[$aid] = $r;
@@ -409,12 +420,12 @@ class qtype_algebra extends question_type {
             $expr = $expr->responses[''];
         }
         // Create an empty array of variable names for the parser (no variable checking here as it is done in the form validation
-        // TODO see in case of import.
-        $varnames = array();
+        // Todo: see in case of import.
+        $varnames = [];
 
         // We now assume that we have a string to parse. Create a parser instance to
         // to this and return the parser expression at the top of the parse tree.
-        $p = new qtype_algebra_parser;
+        $p = new qtype_algebra_parser();
         // Perform the actual parsing inside a try-catch block so that any exceptions.
         // can be caught and converted into errors.
         try {
@@ -422,9 +433,9 @@ class qtype_algebra extends question_type {
         } catch (Exception $e) {
             // If the expression cannot be parsed then return a null term. This will
             // make Moodle treat the answer as wrong.
-            // TODO: Would be nice to have support for 'invalid answer' in the quiz
+            // Todo: Would be nice to have support for 'invalid answer' in the quiz
             // engine since an unparseable response is usually caused by a silly typo.
-            return new qtype_algebra_parser_nullterm;
+            return new qtype_algebra_parser_nullterm();
         }
     }
 
@@ -437,7 +448,7 @@ class qtype_algebra extends question_type {
      */
     protected function initialise_question_instance(question_definition $question, $questiondata) {
         parent::initialise_question_instance($question, $questiondata);
-        $question->variables = array();
+        $question->variables = [];
         if (!empty($questiondata->options->variables)) {
             foreach ($questiondata->options->variables as $v) {
                 $question->variables[$v->id] = new qtype_algebra_variable($v->id, $v->name, $v->min, $v->max);
@@ -470,16 +481,20 @@ class qtype_algebra extends question_type {
      * @throws coding_exception
      */
     public function get_possible_responses($questiondata) {
-        $responses = array();
+        $responses = [];
 
         foreach ($questiondata->options->answers as $aid => $answer) {
-            $responses[$aid] = new question_possible_response($answer->answer,
-                    $answer->fraction);
+            $responses[$aid] = new question_possible_response(
+                $answer->answer,
+                $answer->fraction
+            );
         }
         $responses[0] = new question_possible_response(
-                    get_string('didnotmatchanyanswer', 'question'), 0);
+            get_string('didnotmatchanyanswer', 'question'),
+            0
+        );
         $responses[null] = question_possible_response::no_response();
 
-        return array($questiondata->id => $responses);
+        return [$questiondata->id => $responses];
     }
 }

@@ -45,14 +45,14 @@ require_once($CFG->dirroot . '/question/type/algebra/edit_algebra_form.php');
  * @copyright  2007 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class question_type_test extends \advanced_testcase {
+final class question_type_test extends \advanced_testcase {
     /**
      * @var string[]
      */
-    public static $includecoverage = array(
+    public static $includecoverage = [
         'question/type/questiontypebase.php',
         'question/type/algebra/questiontype.php',
-    );
+    ];
 
     /**
      * @var object qtype_algebra
@@ -60,11 +60,13 @@ class question_type_test extends \advanced_testcase {
     protected $qtype;
 
     protected function setUp(): void {
+        parent::setUp();
         $this->qtype = new qtype_algebra();
     }
 
     protected function tearDown(): void {
         $this->qtype = null;
+        parent::tearDown();
     }
 
     /**
@@ -82,7 +84,7 @@ class question_type_test extends \advanced_testcase {
      * @covers \qtype_algebra::name
      * @return void
      */
-    public function test_name() {
+    public function test_name(): void {
         $this->assertEquals($this->qtype->name(), 'algebra');
     }
 
@@ -92,7 +94,7 @@ class question_type_test extends \advanced_testcase {
      * @covers \qtype_algebra::can_analyse_responses
      * @return void
      */
-    public function test_can_analyse_responses() {
+    public function test_can_analyse_responses(): void {
         $this->assertTrue($this->qtype->can_analyse_responses());
     }
 
@@ -102,7 +104,7 @@ class question_type_test extends \advanced_testcase {
      * @covers \qtype_algebra::get_random_guess_score
      * @return void
      */
-    public function test_get_random_guess_score() {
+    public function test_get_random_guess_score(): void {
         $q = \test_question_maker::get_question_data('algebra');
         $this->assertEquals(0, $this->qtype->get_random_guess_score($q));
     }
@@ -114,17 +116,17 @@ class question_type_test extends \advanced_testcase {
      * @return void
      * @throws coding_exception
      */
-    public function test_get_possible_responses() {
+    public function test_get_possible_responses(): void {
         $q = \test_question_maker::get_question_data('algebra', 'derive');
 
-        $this->assertEquals(array(
-            $q->id => array(
+        $this->assertEquals([
+            $q->id => [
                 13 => new \question_possible_response('2*x', 1),
                 14 => new \question_possible_response('x', 0.2),
                 null => \question_possible_response::no_response(),
                 0 => new \question_possible_response(get_string('didnotmatchanyanswer', 'question'), 0),
-            ),
-        ), $this->qtype->get_possible_responses($q));
+            ],
+        ], $this->qtype->get_possible_responses($q));
     }
 
     /**
@@ -135,7 +137,7 @@ class question_type_test extends \advanced_testcase {
      * @throws coding_exception
      * @throws moodle_exception
      */
-    public function test_question_saving_simplemath() {
+    public function test_question_saving_simplemath(): void {
         $this->resetAfterTest(true);
         $this->setAdminUser();
 
@@ -143,7 +145,7 @@ class question_type_test extends \advanced_testcase {
         $formdata = \test_question_maker::get_question_form_data('algebra', 'simplemath');
 
         $generator = $this->getDataGenerator()->get_plugin_generator('core_question');
-        $cat = $generator->create_question_category(array());
+        $cat = $generator->create_question_category([]);
 
         $formdata->category = "{$cat->id},{$cat->contextid}";
         qtype_algebra_edit_form::mock_submit((array)$formdata);
@@ -155,18 +157,18 @@ class question_type_test extends \advanced_testcase {
         $fromform = $form->get_data();
 
         $returnedfromsave = $this->qtype->save_question($questiondata, $fromform);
-        $actualquestionsdata = question_load_questions(array($returnedfromsave->id));
+        $actualquestionsdata = question_load_questions([$returnedfromsave->id], 'qbe.idnumber');
         $actualquestiondata = end($actualquestionsdata);
 
         foreach ($questiondata as $property => $value) {
-            if (!in_array($property, array('id', 'idnumber', 'version', 'timemodified', 'timecreated', 'options'))) {
-                $this->assertObjectHasAttribute($property, $actualquestiondata);
+            if (!in_array($property, ['id', 'idnumber', 'version', 'timemodified', 'timecreated', 'options'])) {
+                $this->assertObjectHasProperty($property, $actualquestiondata);
             }
         }
 
         foreach ($questiondata->options as $optionname => $value) {
-            if (!in_array($optionname, array('answers', 'variables'))) {
-                $this->assertObjectHasAttribute($optionname, $actualquestiondata->options);
+            if (!in_array($optionname, ['answers', 'variables'])) {
+                $this->assertObjectHasProperty($optionname, $actualquestiondata->options);
             }
         }
 
@@ -174,8 +176,8 @@ class question_type_test extends \advanced_testcase {
             $actualanswer = array_shift($actualquestiondata->options->answers);
             foreach ($answer as $ansproperty => $ansvalue) {
                 // This question does not use 'answerformat', will ignore it.
-                if (!in_array($ansproperty, array('id', 'question', 'answerformat'))) {
-                    $this->assertObjectHasAttribute($ansproperty, $actualanswer);
+                if (!in_array($ansproperty, ['id', 'question', 'answerformat'])) {
+                    $this->assertObjectHasProperty($ansproperty, $actualanswer);
                 }
             }
         }
@@ -189,7 +191,7 @@ class question_type_test extends \advanced_testcase {
      * @throws coding_exception
      * @throws moodle_exception
      */
-    public function test_question_saving_trims_answers() {
+    public function test_question_saving_trims_answers(): void {
         $this->resetAfterTest(true);
         $this->setAdminUser();
 
@@ -197,7 +199,7 @@ class question_type_test extends \advanced_testcase {
         $formdata = \test_question_maker::get_question_form_data('algebra', 'simplemath');
 
         $generator = $this->getDataGenerator()->get_plugin_generator('core_question');
-        $cat = $generator->create_question_category(array());
+        $cat = $generator->create_question_category([]);
 
         $formdata->category = "{$cat->id},{$cat->contextid}";
         $formdata->answer[0] = '   7*x   ';
@@ -210,7 +212,7 @@ class question_type_test extends \advanced_testcase {
         $fromform = $form->get_data();
 
         $returnedfromsave = $this->qtype->save_question($questiondata, $fromform);
-        $actualquestionsdata = question_load_questions(array($returnedfromsave->id));
+        $actualquestionsdata = question_load_questions([$returnedfromsave->id]);
         $actualquestiondata = end($actualquestionsdata);
 
         $firstsavedanswer = reset($questiondata->options->answers);
@@ -223,9 +225,9 @@ class question_type_test extends \advanced_testcase {
      * @covers \qtype_algebra::extra_question_fields
      * @return void
      */
-    public function test_extra_question_fields() {
-        $extraquestionfields = array('qtype_algebra_options', 'compareby', 'nchecks',
-            'tolerance', 'allowedfuncs', 'disallow', 'answerprefix');
+    public function test_extra_question_fields(): void {
+        $extraquestionfields = ['qtype_algebra_options', 'compareby', 'nchecks',
+            'tolerance', 'allowedfuncs', 'disallow', 'answerprefix'];
         $this->assertEquals($this->qtype->extra_question_fields(), $extraquestionfields);
     }
 }
