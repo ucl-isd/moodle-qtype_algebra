@@ -71,7 +71,7 @@ jobs:
 
       - name: Install moodle-plugin-ci
         run: |
-          moodle-plugin-ci add-plugin -b main --clone https://github.com/moodleou/moodle-qtype_combined.git
+          moodle-plugin-ci add-plugin -b fixed-indent --clone git@github.com:ucl-isd/moodle-qtype_combined.git
           moodle-plugin-ci install --plugin ./plugin --db-host=127.0.0.1
         env:
           DB: ${{ matrix.database }}
