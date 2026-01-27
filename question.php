@@ -28,6 +28,7 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/question/type/questionbase.php');
 require_once($CFG->dirroot . '/question/type/algebra/questiontype.php');
 require_once($CFG->dirroot . '/question/type/algebra/parser.php');
+require_once($CFG->dirroot . '/question/type/algebra/variable.php');
 
 /**
  * Represents an algebra question.
@@ -282,7 +283,14 @@ class qtype_algebra_question extends question_graded_by_strategy implements ques
             // Loop over all the variables in the question.
             foreach ($this->variables as $var) {
                 // Set the value of the variable to a random number between the min and max.
-                $values[$var->name] = $var->min + lcg_value() * abs($var->max - $var->min);
+                // Check for the PHP version as getFloat() is only available from PHP 8.3 on and
+                // lcg_value() will be deprecated from PHP 8.4 on.
+                if (PHP_VERSION_ID >= 80300) {
+                    $randomizer = new \Random\Randomizer();
+                    $values[$var->name] = $var->min + $randomizer->getFloat(0, 1) * abs($var->max - $var->min);
+                } else {
+                    $values[$var->name] = $var->min + lcg_value() * abs($var->max - $var->min);
+                }
             }
             $respvalue = $response->evaluate($values);
             $ansvalue = $answer->evaluate($values);
@@ -366,42 +374,5 @@ class qtype_algebra_question extends question_graded_by_strategy implements ques
                 $forcedownload
             );
         }
-    }
-}
-
-/**
- * Class to represent an algebra question variable
- *
- * loaded from the qtype_algebra_variables table in the database.
- *
- * @copyright  2009 The Open University
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-class qtype_algebra_variable {
-    /** @var int the answer id. */
-    public $id;
-
-    /** @var string the name. */
-    public $name;
-
-    /** @var string minimum value. */
-    public $min = '-';
-
-    /** @var string maximum value. */
-    public $max = '-';
-
-    /**
-     * Constructor.
-     *
-     * @param int $id the variable.
-     * @param string $name the name.
-     * @param string $min the minimum value.
-     * @param string $max value.
-     */
-    public function __construct($id, $name, $min, $max) {
-        $this->id = $id;
-        $this->name = $name;
-        $this->min = $min;
-        $this->max = $max;
     }
 }
